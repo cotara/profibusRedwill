@@ -16,7 +16,8 @@ void timers_init(uint32_t period2)
 //  ***********************************************************************/
   RCC_GetClocksFreq(&RCC_ClocksStatus);
   TIM_InternalClockConfig(TIM3);
-  TIM_TimeBaseStructure.TIM_Prescaler = 336-1;                                   //Таймер настроен на 500 кГц
+  //TIM_TimeBaseStructure.TIM_Prescaler = 168-1;                                    //Таймер настроен на 500 кГц
+  TIM_TimeBaseStructure.TIM_Prescaler = 21-1;                                   //Таймер настроен на 4МГц
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_Period = period2-1;                                    //1мс
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
@@ -26,7 +27,7 @@ void timers_init(uint32_t period2)
   TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
   TIM_ClearFlag(TIM3,TIM_IT_Update);
   
-  NVIC_SetPriority (TIM3_IRQn, 0);
+  NVIC_SetPriority (TIM3_IRQn, 1);
   NVIC_EnableIRQ (TIM3_IRQn);
 
   TIM_Cmd(TIM3,ENABLE);

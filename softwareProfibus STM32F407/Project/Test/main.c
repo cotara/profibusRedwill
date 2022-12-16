@@ -25,8 +25,9 @@ void main(void) {
     RCC_GetClocksFreq(&RCC_Clocks);
     SysTick_Config(SystemCoreClock/1000);
     
-    timers_init(1000);
+    //timers_init(1000);
     LEDInit();
+    //timers_init((uint32_t)(2));
     init_Profibus ();
     InitUSART2();
     

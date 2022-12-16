@@ -30,11 +30,9 @@ void USART2_IRQHandler(void) {
         if ((USART2->SR & (USART_FLAG_NE|USART_FLAG_FE|USART_FLAG_PE|USART_FLAG_ORE)) == 0) {              //нет ошибок
               TIM3->CNT = 0;                                                    // Сброс таймера Profibus
               uart_process(USART_ReceiveData(USART2) & 0xFF);
-              //GPIOD->ODR ^= GPIO_Pin_4;
         }                                                                       //Сообщение из USART пришло без ошибок
         else{
            USART_ReceiveData(USART2);
-           GPIOD->ODR ^= GPIO_Pin_8;
         }
     }
         
@@ -44,7 +42,6 @@ void USART2_IRQHandler(void) {
     
     
     if (USART_GetITStatus(USART2, USART_IT_TXE) != RESET) {                      //прерывание по передаче
-      GPIO_SetBits (GPIOD,GPIO_Pin_4); 
       USART_ClearITPendingBit(USART2, USART_IT_TXE);                           //очищаем признак прерывания
         
         TIM3->CNT = 0;                                                          // Сброс таймера Profibus  
@@ -57,35 +54,26 @@ void USART2_IRQHandler(void) {
             USART_ITConfig(USART2, USART_IT_TC, ENABLE);
             txrd_index=0;
         }
-     }
+    }
     if (USART_GetITStatus(USART2, USART_IT_TC) != RESET) {  
        USART_ClearITPendingBit(USART2, USART_IT_TC); 
-
        RX485EN;
        USART_ITConfig(USART2, USART_IT_TC, DISABLE);
     }
-GPIO_ResetBits (GPIOD,GPIO_Pin_4); 
 }
 
 //Таймер для сброса непринятой посылки
 void TIM3_IRQHandler(void) {
   if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET){
+   
    TIM_ClearFlag(TIM3, TIM_IT_Update);
-    counter++;
-      if(counter==1000){
-          counter=0;
-          LEDToggle();
-      }
       // Timer A Stop  
       TIM_Cmd(TIM3,DISABLE);
       TIM3->CNT = 0;
-      GPIOD->ODR ^= GPIO_Pin_4;
+      //GPIOD->ODR ^= GPIO_Pin_0;
+
       switch (profibus_status) {
         case PROFIBUS_WAIT_SYN: 
-            GPIO_SetBits(GPIOD,GPIO_Pin_1);
-            GPIO_ResetBits(GPIOD,GPIO_Pin_0);
-            GPIO_ResetBits(GPIOD,GPIO_Pin_2);
-            GPIO_ResetBits(GPIOD,GPIO_Pin_3);
             profibus_status = PROFIBUS_WAIT_DATA;
             timers_init((uint32_t)(TIMEOUT_MAX_SDR_TIME+0.5));
             rx_index = 0;
@@ -95,21 +83,16 @@ void TIM3_IRQHandler(void) {
             break;
             
         case PROFIBUS_GET_DATA:                                                   // TSDR истёк, а данные есть
-          GPIO_SetBits(GPIOD,GPIO_Pin_0);  
-          GPIO_ResetBits(GPIOD,GPIO_Pin_1);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_2);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_3);
           profibus_status = PROFIBUS_WAIT_SYN;
           timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME+0.5));                      //Время синхронизации пошло       
           TIM_Cmd(TIM3,ENABLE);
+          GPIO_SetBits(GPIOD,GPIO_Pin_0);
           profibus_RX();
+          GPIO_ResetBits(GPIOD,GPIO_Pin_0);
           break;
             
         case PROFIBUS_SEND_DATA:                                                  // Время ожидания отправки истекло, переводим на получение
-          GPIO_SetBits(GPIOD,GPIO_Pin_0);  
           GPIO_ResetBits(GPIOD,GPIO_Pin_1);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_2);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_3);  
           profibus_status = PROFIBUS_WAIT_SYN;
           timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME+0.5));                      //Время синхронизации пошло   
           //RX485EN;           

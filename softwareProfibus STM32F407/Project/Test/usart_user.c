@@ -28,7 +28,7 @@ int InitUSART2() {
   GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART2); //PC11 to RX USART2
   
   USART_InitTypeDef USART_InitStructureUSART;  
-  USART_InitStructureUSART.USART_BaudRate = 9600;
+  USART_InitStructureUSART.USART_BaudRate = 1500000;
   USART_InitStructureUSART.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructureUSART.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_InitStructureUSART.USART_Parity = USART_Parity_Even;
@@ -47,7 +47,7 @@ int InitUSART2() {
   GPIO_Init(GPIOD, &GPIO_InitStructure);
   
   
-  NVIC_SetPriority (USART2_IRQn, 3);
+  NVIC_SetPriority (USART2_IRQn, 0);
   NVIC_EnableIRQ (USART2_IRQn);
 
   USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
@@ -76,6 +76,7 @@ void USART2_put_char(uint8_t c) {
 void USART2_put_string_2(unsigned char *string, uint32_t l) {
   TX485EN;
   tx_index=0;                                                                   //Передаём cначала
+  tx_counter=l;//это ЭЛЬ! А не единица
   while (l != 0){
     USART2_put_char(*string++);
     l--;
@@ -86,13 +87,8 @@ void uart_process(uint8_t byte){
   uart_buffer[rx_index] = byte;
  
   // TSYN истек, находимся в режиме ожидания данных. Приём первого байта
-  if (profibus_status == PROFIBUS_WAIT_DATA) {   
+  if (profibus_status == PROFIBUS_WAIT_DATA)   
     profibus_status = PROFIBUS_GET_DATA;                                        //Меняем статус на ПРОСЕСС ПОЛУЧЕНИЯ ДАННЫХ
-          GPIO_SetBits(GPIOD,GPIO_Pin_2);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_0);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_1);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_3);
-  }
   
   if (profibus_status == PROFIBUS_GET_DATA)  {
     rx_index++;

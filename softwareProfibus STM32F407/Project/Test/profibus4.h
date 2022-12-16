@@ -183,7 +183,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #define TIMEOUT_MAX_SYN_TIME  33 * DELAY_TBIT // 33 TBit = TSYN                 //33 длины бита надо ждать
 #define TIMEOUT_MAX_RX_TIME   15 * DELAY_TBIT
-#define TIMEOUT_MAX_TX_TIME   15 * DELAY_TBIT                                   //
+#define TIMEOUT_MAX_TX_TIME   20 * DELAY_TBIT                                   //
 #define TIMEOUT_MAX_SDR_TIME  12 * DELAY_TBIT // 15 Tbit = TSDR                 //Принимаем данные
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -194,8 +194,8 @@
 #define OUTPUT_DATA_SIZE      128    // Anzahl Bytes die an Master gehen
 #define MODULE_CNT            8     // Anzahl der Module (Ein- Ausgangsmodule) bei modularer Station
 
-#define USER_PARA_SIZE        4     // Anzahl Bytes fuer Herstellerspezifische Parameterdaten
-#define EXT_DIAG_DATA_SIZE    3     // Anzahl Bytes fuer erweiterte Diagnose
+#define USER_PARA_SIZE        0     // Anzahl Bytes fuer Herstellerspezifische Parameterdaten
+#define EXT_DIAG_DATA_SIZE    0     // Anzahl Bytes fuer erweiterte Diagnose
 #define VENDOR_DATA_SIZE      0     // Anzahl Herstellerspezifische Moduldaten
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -216,8 +216,32 @@
 
 //#define DELAY_TIMER_1_7MS   0x00B1  // 33 TB (UART @ 93750)
 //#define DELAY_TIMER_782US   0x0051  // 15 TB (UART @ 93750)
-//#define DELAY_TBIT            5.33    // UART @ 93750                           //Количество тиков таймера на бит
-#define DELAY_TBIT            25    // UART @ 9600
+//Если таймер 500 кГц, то цикл 2мкс
+//93750 бод/с - это 10.66 мкс/бит
+//Тогда TBIT = 10.66/2 = 5.33 циклов(тиков) на бит
+   
+//Если таймер 4 Мгц, то цикл 0.25 мкс
+
+//9600 бод/с - это 104.17 мкс/бит
+//Тогда TBIT = 104.17/0.25 = 416.67 циклов(тиков) на бит
+   
+//93750 бод/с - это 10.66 мкс/бит
+//Тогда TBIT = 10.66/0.25 =  циклов(тиков) на бит
+   
+//500000 бод/с - это 2 мкс/бит
+//Тогда TBIT = 2/0.25 = 8циклов(тиков) на бит
+   
+//1000000 бод/с - это 1 мкс/бит
+//Тогда TBIT = 1/0.25 = 4 циклов(тиков) на бит 
+
+//1500000 бод/с - это 0,667 мкс/бит
+//Тогда TBIT = 0,667/0.25 = 2.667 циклов(тиков) на бит 
+
+#define DELAY_TBIT            2.667    // UART @ 1500000    
+//#define DELAY_TBIT            4    // UART @ 1000000     
+//#define DELAY_TBIT            8    // UART @ 500000                          
+//#define DELAY_TBIT            42.67    // UART @ 93750                           //Количество тиков таймера на бит
+//#define DELAY_TBIT            416.67    // UART @ 9600
    ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

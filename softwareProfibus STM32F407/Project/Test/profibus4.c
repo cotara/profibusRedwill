@@ -396,21 +396,21 @@ void profibus_RX (void)
                           break;
   
                     }
-                    //Расчёт размеров входных и выходных регистров
-                    inputSize = 0;
-                    outputSize = 0;
-                    for(int i=0;i<Module_cnt;i++){
-                      inputSize+=Module_Data_size[i][0];
-                      outputSize+=Module_Data_size[i][1];
-                    }
                     break;
   
                 default:
                     break;
   
               } // Switch End
+              
             } // For End
-            
+            //Расчёт размеров входных и выходных регистров
+            inputSize = 0;
+            outputSize = 0;
+            for(int i=0;i<Module_cnt;i++){
+              inputSize+=Module_Data_size[i][1];
+              outputSize+=Module_Data_size[i][0];
+            }
             if (Vendor_Data_size != 0) {/* обработка*/}
                 
             #if (VENDOR_DATA_SIZE > 0)                                          // В случае ошибки -> отправить CFG_FAULT_ в диагностике
@@ -453,7 +453,7 @@ void profibus_RX (void)
         if (diagnose_status_1 & EXT_DIAG_)                                      //Если требуется внешняя диагностика
             profibus_send_CMD(SD2, DATA_HIGH, 0, &uart_buffer[7], 0);           // Запросить диагностический запрос
         else
-            profibus_send_CMD(SD2, DATA_LOW, 0, &uart_buffer[7], Module_Data_size[0][1]);            // Отправляем данные
+            profibus_send_CMD(SD2, DATA_LOW, 0, &uart_buffer[7], outputSize);            // Отправляем данные
           
           
 //        for (cnt = 0; cnt < INPUT_DATA_SIZE; cnt++)                             // Чтение данных от мастера
@@ -569,14 +569,11 @@ void profibus_send_CMD (uint8_t type,uint8_t function_code,uint8_t sap_offset,ui
 void profibus_TX (uint8_t *data, uint8_t length)
 {
     profibus_status = PROFIBUS_SEND_DATA;
-    GPIO_SetBits(GPIOD,GPIO_Pin_3);  
-    GPIO_ResetBits(GPIOD,GPIO_Pin_1);
-    GPIO_ResetBits(GPIOD,GPIO_Pin_2);
-    GPIO_ResetBits(GPIOD,GPIO_Pin_0);
-  
+    
     timers_init((uint32_t)(TIMEOUT_MAX_TX_TIME+0.5));                           // Инициализация таймера
-    GPIOD->ODR ^= GPIO_Pin_4;
+
     TIM_Cmd(TIM3,ENABLE);
+    GPIO_SetBits(GPIOD,GPIO_Pin_1);
     USART2_put_string_2(data,length);                                           //Загружаем строку в буфер на отправку
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
