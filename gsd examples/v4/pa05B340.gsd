@@ -1,0 +1,635 @@
+;------------------------------------------------------------------------------
+; This GSD (General Station Description) is provided by PI C3PG7 "PA Profile".
+; This GSD is available for download at PI web server.
+; The Profile GSDs cover the common subset of functions of devices of
+; a specific PA device type providing interchangeability.
+; 
+; This file describes the device type:
+;  Electrical Actuator
+;  with 1 Actuator output
+;  Physical layer RS-485.
+; This file becomes valid with the PA profile version 4.0.
+;
+; Last modification: 2017-10-20
+;------------------------------------------------------------------------------
+#Profibus_DP
+
+;Standard definitions, valid for all device types with RS-485
+GSD_Revision        = 5
+Vendor_Name         = "Profile Process Control Devices"
+Revision            = "PA 4.x"
+Protocol_Ident      = 0
+Station_Type        = 0
+FMS_supp            = 0
+Hardware_Release    = "-"
+Software_Release    = "-"
+9.6_supp            = 1
+19.2_supp           = 1
+45.45_supp          = 1
+93.75_supp          = 1
+187.5_supp          = 1 ;needed to support spec. network devices
+500_supp            = 1 ;needed to support spec. network devices
+1.5M_supp           = 1 ;needed to support spec. network devices
+3M_supp             = 1 ;needed to support spec. network devices
+6M_supp             = 1 ;needed to support spec. network devices
+12M_supp            = 1 ;needed to support spec. network devices
+MaxTsdr_9.6         = 60
+MaxTsdr_19.2        = 60
+MaxTsdr_45.45       = 250 ;exception for spec. network devices
+MaxTsdr_93.75       = 60
+MaxTsdr_187.5       = 60
+MaxTsdr_500         = 100
+MaxTsdr_1.5M        = 150
+MaxTsdr_3M          = 250
+MaxTsdr_6M          = 450
+MaxTsdr_12M         = 800
+Redundancy          = 0
+Repeater_Ctrl_Sig   = 0
+24V_Pins            = 0
+Freeze_Mode_supp    = 0
+Sync_Mode_supp      = 0
+Auto_Baud_supp      = 1
+Set_Slave_Add_supp  = 1
+Min_Slave_Intervall = 6
+Modular_Station     = 1
+Slave_Family        = 12@Profile4
+;end of standard definitions
+
+;Device type specific definitions
+Model_Name          = "Electrical actuator (PhyL 0)"
+Ident_Number        = 0xB340
+Bitmap_Device       = "PA_B340n"
+Max_Module          = 1
+Max_Input_Len       = 10 ;READBACK(5), POS_D(2), CHECK_BACK(3)
+Max_Output_Len      = 5  ;SP
+Max_Data_Len        = 15
+Max_Diag_Data_Len   = 38
+Modul_Offset        = 1
+Max_User_Prm_Data_Len = 16
+Ext_User_Prm_Data_Const(0) = 0x80 ;DPV1 Status 1
+Ext_User_Prm_Data_Const(1) = 0x00 ;DPV1 Status 2
+Ext_User_Prm_Data_Const(2) = 0x08 ;DPV1 Status 3
+
+
+;--- Startup parameter of the Physical Block (Slot 0)
+;PrmText             = 1 ;STARTUP_PARAM_VALIDITY
+;Text(0)             = "Ignored"
+;Text(1)             = "Applied"
+;EndPrmText
+
+;ExtUserPrmData      = 1 "Startup parameters"
+;Unsigned8 0 0-1
+;Prm_Text_Ref        = 1
+;EndExtUserPrmData
+
+;Ext_User_Prm_Data_Const(3) = 5,66,0,0,0x00
+;Ext_User_Prm_Data_Ref(7)   = 1 ;STARTUP_PARAM_VALIDITY (Unsigned8)
+
+
+
+Prm_Block_Structure_supp = 1
+PrmCmd_supp         = 1 ;slave supports PrmCmd
+Slave_Max_Switch_Over_Time = 20 ;=200 ms
+Slave_Redundancy_supp = 1 ;slave is not redundant but can be connected to a flying master
+
+
+Info_Text = "Electrical actuator with PROFIBUS DP \
+communication interface."
+
+Ident_Maintenance_supp = 1
+
+
+;----------- Description of extended DP features: ---------------------
+;
+DPV1_Slave          = 1
+C1_Read_Write_supp  = 1
+C1_Max_Data_Len     = 128
+C1_Response_Timeout = 1000
+C2_Read_Write_supp  = 1
+C2_Max_Data_Len     = 128
+C2_Max_Count_Channels = 1
+Max_Initiate_PDU_Length = 52
+C2_Response_Timeout = 1000
+DPV1_Data_Types     = 0
+WD_Base_1ms_supp    = 0
+Check_Cfg_Mode      = 0
+
+
+
+
+;----------- Description of device related diagnosis: ---------------------
+;
+Unit_Diag_Bit(16)   = "Status appears"
+Unit_Diag_Bit(17)   = "Status disappears"
+Unit_Diag_Bit(35)   = "Restart" ;DIA_WARMSTART
+Unit_Diag_Bit(36)   = "Application reset" ;DIA_COLDSTART
+Unit_Diag_Bit(37)   = "Maintenance required" ;DIA_MAINTENANCE
+Unit_Diag_Bit(40)   = "Maintenance alarm" ;DIA_MAINTENANCE_ALARM
+Unit_Diag_Bit(41)   = "Maintenance demanded" ;DIA_MAINTENANCE_DEMANDED
+Unit_Diag_Bit(42)   = "Function check" ;DIA_FUNCTION_CHECK
+Unit_Diag_Bit(43)   = "Out of specification" ;DIA_OUT_OF_SPEC
+Unit_Diag_Bit(44)   = "Parameter update" ;DIA_UPDATE_EVENT
+Unit_Diag_Bit(55)   = "Extension available" 
+
+;NE107_COMMON
+Unit_Diag_Bit(56)      = "Sensor element exciter faulty"
+Unit_Diag_Bit_Help(56) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(57)      = "Error in evaluation electronics"
+Unit_Diag_Bit_Help(57) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(58)      = "Error in internal energy supply"
+Unit_Diag_Bit_Help(58) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(59)      = "Error in sensor element"
+Unit_Diag_Bit_Help(59) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(60)      = "Error in actuator element"
+Unit_Diag_Bit_Help(60) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(61)      = "Faulty installat e.g. dead space"
+Unit_Diag_Bit_Help(61) = "Check installation."
+Unit_Diag_Bit(62)      = "Parameter setting error"
+Unit_Diag_Bit_Help(62) = "Check parameter settings for consistency."
+Unit_Diag_Bit(63)      = "Signal path broken or short cut"
+Unit_Diag_Bit_Help(63) = "Check signal path."
+Unit_Diag_Bit(64)      = "Overloading"
+Unit_Diag_Bit_Help(64) = "Check load."
+Unit_Diag_Bit(65)      = "Wrong polarity of aux power"
+Unit_Diag_Bit_Help(65) = "Check polarity."
+Unit_Diag_Bit(66)      = "Maximum line length exceeded"
+Unit_Diag_Bit_Help(66) = "Check line length."
+Unit_Diag_Bit(67)      = "Corrosion/abrasion by medium"
+Unit_Diag_Bit_Help(67) = "Replacement is recommended."
+Unit_Diag_Bit(68)      = "Fouling on sensor element"
+Unit_Diag_Bit_Help(68) = "Cleaning is recommended."
+Unit_Diag_Bit(69)      = "Auxil medium missing or insuffic"
+Unit_Diag_Bit_Help(69) = "Check auxiliary medium."
+Unit_Diag_Bit(70)      = "Wear reserve used up (operation)"
+Unit_Diag_Bit_Help(70) = "Plan maintenance."
+Unit_Diag_Bit(71)      = "Wear reserve used up (wear)"
+Unit_Diag_Bit_Help(71) = "Plan maintenance."
+Unit_Diag_Bit(72)      = "Error in peripherals"
+Unit_Diag_Bit_Help(72) = "Check peripherals."
+Unit_Diag_Bit(73)      = "Electromag interference too high"
+Unit_Diag_Bit_Help(73) = "Lower external electromagnetic interference."
+Unit_Diag_Bit(74)      = "Temperature of medium too high"
+Unit_Diag_Bit_Help(74) = "Check that the device is operated within its \
+specifications."
+Unit_Diag_Bit(75)      = "Ambient temperature too high"
+Unit_Diag_Bit_Help(75) = "Check that the device is operated within its \
+specifications."
+Unit_Diag_Bit(76)      = "Vibration/Impact load too high"
+Unit_Diag_Bit_Help(76) = "Check that the device is operated within its \
+specifications."
+Unit_Diag_Bit(77)      = "Auxiliary power range off-spec"
+Unit_Diag_Bit_Help(77) = "Check power supply"
+Unit_Diag_Bit(78)      = "Auxiliary medium missing"
+Unit_Diag_Bit_Help(78) = "Check auxiliary medium."
+Unit_Diag_Bit(79)      = "Excessive temperature shock"
+Unit_Diag_Bit_Help(79) = "Check that the device is operated within its \
+specifications."
+Unit_Diag_Bit(80)      = "Deviation from measurement"
+Unit_Diag_Bit_Help(80) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(81)      = "Humidity in electronics area"
+Unit_Diag_Bit_Help(81) = "Replacement is recommended."
+Unit_Diag_Bit(82)      = "Medium in electronics area"
+Unit_Diag_Bit_Help(82) = "Replacement is recommended."
+Unit_Diag_Bit(83)      = "Mechanical damage"
+Unit_Diag_Bit_Help(83) = "Replacement is recommended."
+Unit_Diag_Bit(84)      = "Communication error"
+Unit_Diag_Bit_Help(84) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(85)      = "Foreign material in electro area"
+Unit_Diag_Bit_Help(85) = "Replacement is recommended."
+
+;NE107_ELECTRO (device specific)
+Unit_Diag_Bit(104)      = "Faulty torque monitoring"
+Unit_Diag_Bit_Help(104) = "Check torque sensor electronics and actuator \
+mechanics."
+Unit_Diag_Bit(105)      = "Worn gear/spindle"
+Unit_Diag_Bit_Help(105) = "Plan maintenance."
+Unit_Diag_Bit(106)      = "Drive torque off-spec"
+Unit_Diag_Bit_Help(106) = "Check controls electronics and actuator mechanics."
+Unit_Diag_Bit(107)      = "Device temperature too high"
+Unit_Diag_Bit_Help(107) = "Check actuator and operating conditions."
+Unit_Diag_Bit(108)      = "Faulty limit position monitoring"
+Unit_Diag_Bit_Help(108) = "Check controls electronics and actuator mechanics."
+Unit_Diag_Bit(109)      = "Motor overload"
+Unit_Diag_Bit_Help(109) = "Check actuator operating conditions and \
+installation."
+Unit_Diag_Bit(110)      = "Oil quality off-spec"
+Unit_Diag_Bit_Help(110) = "Plan maintenance, exchange oil."
+Unit_Diag_Bit(111)      = "Oil loss"
+Unit_Diag_Bit_Help(111) = "Plan maintenance, check seals."
+
+Unit_Diag_Bit(112)      = "Blocked drive"
+Unit_Diag_Bit_Help(112) = "Check actuator mechanics and installation."
+Unit_Diag_Bit(113)      = "Off-spec seat/plug leakage"
+Unit_Diag_Bit_Help(113) = "Check installation. Check seat/plug."
+Unit_Diag_Bit(114)      = "Off-spec spindle/shaft seal leak"
+Unit_Diag_Bit_Help(114) = "Check installation. Check spindle/shaft."
+Unit_Diag_Bit(115)      = "Alteration and wear on spindle"
+Unit_Diag_Bit_Help(115) = "Plan maintenance. Replace spindle."
+Unit_Diag_Bit(116)      = "Altered friction"
+Unit_Diag_Bit_Help(116) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+Unit_Diag_Bit(117)      = "Wear in the valve"
+Unit_Diag_Bit_Help(117) = "Check installation. Plan maintenance."
+Unit_Diag_Bit(118)      = "Blocked valve"
+Unit_Diag_Bit_Help(118) = "Check installation. Check actuator mechanics \
+and power supply."
+Unit_Diag_Bit(119)      = "Change in valve move performance"
+Unit_Diag_Bit_Help(119) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+
+Unit_Diag_Bit(120)      = "Changed breakaway moment"
+Unit_Diag_Bit_Help(120) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+Unit_Diag_Bit(121)      = "Spindle deformation"
+Unit_Diag_Bit_Help(121) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+Unit_Diag_Bit(122)      = "Plug torn off"
+Unit_Diag_Bit_Help(122) = "Plan maintenance. Check operating conditions."
+Unit_Diag_Bit(123)      = "Off-spec valve temperature"
+Unit_Diag_Bit_Help(123) = "Check operating conditions."
+Unit_Diag_Bit(124)      = "Off-spec characteristic line"
+Unit_Diag_Bit_Help(124) = "Check operating conditions. Plan maintenance."
+;Unit_Diag_Bit(125)      = ""
+;Unit_Diag_Bit_Help(125) = ""
+Unit_Diag_Bit(126)      = "Incorrect position sensing"
+Unit_Diag_Bit_Help(126) = "Check position sensor electronics and actuator \
+mechanics."
+Unit_Diag_Bit(127)      = "Input signal off-spec"
+Unit_Diag_Bit_Help(127) = "Check input signal."
+
+Unit_Diag_Bit(128)      = "Vibration off-spec"
+Unit_Diag_Bit_Help(128) = "Check operating conditions. Plan maintenance."
+Unit_Diag_Bit(129)      = "Temp in positioner too high/low"
+Unit_Diag_Bit_Help(129) = "Check operating conditions."
+Unit_Diag_Bit(130)      = "Moisture in positioner"
+Unit_Diag_Bit_Help(130) = "Plan maintenance. Check seals."
+Unit_Diag_Bit(131)      = "Additional IO module defect"
+Unit_Diag_Bit_Help(131) = "Plan maintenance. Replace IO module."
+Unit_Diag_Bit(132)      = "Signal without end position"
+Unit_Diag_Bit_Help(132) = "Check limit switch/position sensor."
+Unit_Diag_Bit(133)      = "No signal in end position"
+Unit_Diag_Bit_Help(133) = "Check limit switch/position sensor."
+Unit_Diag_Bit(134)      = "Control loop oscillation"
+Unit_Diag_Bit_Help(134) = "Check operating conditions. Check control \
+loop configuration."
+Unit_Diag_Bit(135)      = "Hysteresis"
+Unit_Diag_Bit_Help(135) = "Check configuration. Check controls \
+electronics and actuator mechanics."
+
+Unit_Diag_Bit(136)      = "Changed friction"
+Unit_Diag_Bit_Help(136) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+Unit_Diag_Bit(137)      = "Backlash between drive and valve"
+Unit_Diag_Bit_Help(137) = "Check installation."
+Unit_Diag_Bit(138)      = "Persistent deviation of control"
+Unit_Diag_Bit_Help(138) = "Check configuration."
+Unit_Diag_Bit(139)      = "Inadmissible dynamic stress"
+Unit_Diag_Bit_Help(139) = "Check operating conditions. Plan maintenance."
+Unit_Diag_Bit(140)      = "Faulty mounting"
+Unit_Diag_Bit_Help(140) = "Check installation."
+Unit_Diag_Bit(141)      = "Faulty mount positioner to motor"
+Unit_Diag_Bit_Help(141) = "Check installation."
+Unit_Diag_Bit(142)      = "Leak in piping"
+Unit_Diag_Bit_Help(142) = "Check installation."
+Unit_Diag_Bit(143)      = "Insufficient drive power"
+Unit_Diag_Bit_Help(143) = "Check actuator power  supply and mechanics. \
+Check operating conditions. Plan maintenance."
+
+;Unit_Diag_Bit(144)      = ""
+;Unit_Diag_Bit_Help(144) = ""
+Unit_Diag_Bit(145)      = "Operator error during operation"
+Unit_Diag_Bit_Help(145) = "Restart device. Check if failure recurs. \
+Replacement is recommended."
+Unit_Diag_Bit(146)      = "Inadmissible static stress"
+Unit_Diag_Bit_Help(146) = "Check operating conditions. Plan maintenance."
+Unit_Diag_Bit(147)      = "Recording of pers. control dev."
+Unit_Diag_Bit_Help(147) = "Check configuration."
+Unit_Diag_Bit(148)      = "Parameter plausibility check"
+Unit_Diag_Bit_Help(148) = "Check configuration."
+Unit_Diag_Bit(149)      = "Status report on operating mode"
+Unit_Diag_Bit_Help(149) = "Check operating conditions."
+Unit_Diag_Bit(150)      = "Histogram for valve positions"
+Unit_Diag_Bit_Help(150) = "Check operating conditions. Check installation. \
+Plan maintenance."
+Unit_Diag_Bit(151)      = "Zero point and endpoint shift"
+Unit_Diag_Bit_Help(151) = "Check operating conditions. Check installation. \
+Plan maintenance."
+
+Unit_Diag_Bit(152)      = "Running time monitoring"
+Unit_Diag_Bit_Help(152) = "Check operating conditions. Plan maintenance."
+Unit_Diag_Bit(153)      = "Evaluation of internal signals"
+Unit_Diag_Bit_Help(153) = "Check controls electronics."
+Unit_Diag_Bit(154)      = "Operating hours counter"
+Unit_Diag_Bit_Help(154) = "Plan maintenance."
+Unit_Diag_Bit(155)      = "Pressure-displacement diagram"
+;Unit_Diag_Bit_Help(155) = ""
+Unit_Diag_Bit(156)      = "Total valve travel"
+Unit_Diag_Bit_Help(156) = "Check installation. Plan maintenance."
+Unit_Diag_Bit(157)      = "Step response diagnostics"
+Unit_Diag_Bit_Help(157) = "Check operating conditions. Check installation. \
+Plan maintenance."
+Unit_Diag_Bit(158)      = "Internal temperature monitoring"
+Unit_Diag_Bit_Help(158) = "Check operating conditions. Plan maintenance."
+Unit_Diag_Bit(159)      = "Counter for direction changes"
+Unit_Diag_Bit_Help(159) = "Plan maintenance."
+
+Unit_Diag_Bit(160)      = "Operating archive"
+Unit_Diag_Bit_Help(160) = "Check operating archive."
+Unit_Diag_Bit(161)      = "Report archive"
+Unit_Diag_Bit_Help(161) = "Check report archive."
+Unit_Diag_Bit(162)      = "Status reports on access control"
+Unit_Diag_Bit_Help(162) = "Check unauthorized access."
+Unit_Diag_Bit(163)      = "Cavitation / flashing"
+Unit_Diag_Bit_Help(163) = "Check operating conditions. Check installation. \
+Plan maintenance."
+Unit_Diag_Bit(164)      = "Partial stroke test"
+Unit_Diag_Bit_Help(164) = "Check controls electronics and actuator mechanics."
+Unit_Diag_Bit(165)      = "P dif measurement across valve"
+Unit_Diag_Bit_Help(165) = "Check operating conditions. Check installation. \
+Plan maintenance."
+Unit_Diag_Bit(166)      = "Noise level measurement"
+Unit_Diag_Bit_Help(166) = "Check operating conditions. Check installation. \
+Plan maintenance."
+;Unit_Diag_Bit(167)      = ""
+;Unit_Diag_Bit_Help(167) = ""
+
+;---------------
+UnitDiagType=254
+X_Unit_Diag_Bit(35)   = "Restart" ;DIA_WARMSTART
+X_Unit_Diag_Bit(36)   = "Application reset" ;DIA_COLDSTART
+X_Unit_Diag_Bit(37)   = "Maintenance required" ;DIA_MAINTENANCE
+X_Unit_Diag_Bit(40)   = "Maintenance alarm" ;DIA_MAINTENANCE_ALARM
+X_Unit_Diag_Bit(41)   = "Maintenance demanded" ;DIA_MAINTENANCE_DEMANDED
+X_Unit_Diag_Bit(42)   = "Function check" ;DIA_FUNCTION_CHECK
+X_Unit_Diag_Bit(43)   = "Out of specification" ;DIA_OUT_OF_SPEC
+X_Unit_Diag_Bit(44)   = "Parameter update" ;DIA_UPDATE_EVENT
+X_Unit_Diag_Bit(55)   = "Extension available"
+
+;--- NE107_COMMON
+X_Unit_Diag_Bit(56)      = "Sensor element exciter faulty"
+X_Unit_Diag_Bit_Help(56) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(57)      = "Error in evaluation electronics"
+X_Unit_Diag_Bit_Help(57) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(58)      = "Error in internal energy supply"
+X_Unit_Diag_Bit_Help(58) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(59)      = "Error in sensor element"
+X_Unit_Diag_Bit_Help(59) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(60)      = "Error in actuator element"
+X_Unit_Diag_Bit_Help(60) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(61)      = "Faulty installat e.g. dead space"
+X_Unit_Diag_Bit_Help(61) = "Check installation."
+X_Unit_Diag_Bit(62)      = "Parameter setting error"
+X_Unit_Diag_Bit_Help(62) = "Check parameter settings for consistency."
+X_Unit_Diag_Bit(63)      = "Signal path broken or short cut"
+X_Unit_Diag_Bit_Help(63) = "Check signal path."
+X_Unit_Diag_Bit(64)      = "Overloading"
+X_Unit_Diag_Bit_Help(64) = "Check load."
+X_Unit_Diag_Bit(65)      = "Wrong polarity of aux power"
+X_Unit_Diag_Bit_Help(65) = "Check polarity."
+X_Unit_Diag_Bit(66)      = "Maximum line length exceeded"
+X_Unit_Diag_Bit_Help(66) = "Check line length."
+X_Unit_Diag_Bit(67)      = "Corrosion/abrasion by medium"
+X_Unit_Diag_Bit_Help(67) = "Replacement is recommended."
+X_Unit_Diag_Bit(68)      = "Fouling on sensor element"
+X_Unit_Diag_Bit_Help(68) = "Cleaning is recommended."
+X_Unit_Diag_Bit(69)      = "Auxil medium missing or insuffic"
+X_Unit_Diag_Bit_Help(69) = "Check auxiliary medium."
+X_Unit_Diag_Bit(70)      = "Wear reserve used up (operation)"
+X_Unit_Diag_Bit_Help(70) = "Plan maintenance."
+X_Unit_Diag_Bit(71)      = "Wear reserve used up (wear)"
+X_Unit_Diag_Bit_Help(71) = "Plan maintenance."
+X_Unit_Diag_Bit(72)      = "Error in peripherals"
+X_Unit_Diag_Bit_Help(72) = "Check peripherals."
+X_Unit_Diag_Bit(73)      = "Electromag interference too high"
+X_Unit_Diag_Bit_Help(73) = "Lower external electromagnetic interference."
+X_Unit_Diag_Bit(74)      = "Temperature of medium too high"
+X_Unit_Diag_Bit_Help(74) = "Check that the device is operated within its \
+specifications."
+X_Unit_Diag_Bit(75)      = "Ambient temperature too high"
+X_Unit_Diag_Bit_Help(75) = "Check that the device is operated within its \
+specifications."
+X_Unit_Diag_Bit(76)      = "Vibration/Impact load too high"
+X_Unit_Diag_Bit_Help(76) = "Check that the device is operated within its \
+specifications."
+X_Unit_Diag_Bit(77)      = "Auxiliary power range off-spec"
+X_Unit_Diag_Bit_Help(77) = "Check power supply"
+X_Unit_Diag_Bit(78)      = "Auxiliary medium missing"
+X_Unit_Diag_Bit_Help(78) = "Check auxiliary medium."
+X_Unit_Diag_Bit(79)      = "Excessive temperature shock"
+X_Unit_Diag_Bit_Help(79) = "Check that the device is operated within its \
+specifications."
+X_Unit_Diag_Bit(80)      = "Deviation from measurement"
+X_Unit_Diag_Bit_Help(80) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(81)      = "Humidity in electronics area"
+X_Unit_Diag_Bit_Help(81) = "Replacement is recommended."
+X_Unit_Diag_Bit(82)      = "Medium in electronics area"
+X_Unit_Diag_Bit_Help(82) = "Replacement is recommended."
+X_Unit_Diag_Bit(83)      = "Mechanical damage"
+X_Unit_Diag_Bit_Help(83) = "Replacement is recommended."
+X_Unit_Diag_Bit(84)      = "Communication error"
+X_Unit_Diag_Bit_Help(84) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(85)      = "Foreign material in electro area"
+X_Unit_Diag_Bit_Help(85) = "Replacement is recommended."
+
+;NE107_ELECTRO (device specific)
+X_Unit_Diag_Bit(104)      = "Faulty torque monitoring"
+X_Unit_Diag_Bit_Help(104) = "Check torque sensor electronics and actuator \
+mechanics."
+X_Unit_Diag_Bit(105)      = "Worn gear/spindle"
+X_Unit_Diag_Bit_Help(105) = "Plan maintenance."
+X_Unit_Diag_Bit(106)      = "Drive torque off-spec"
+X_Unit_Diag_Bit_Help(106) = "Check controls electronics and actuator mechanics."
+X_Unit_Diag_Bit(107)      = "Device temperature too high"
+X_Unit_Diag_Bit_Help(107) = "Check actuator and operating conditions."
+X_Unit_Diag_Bit(108)      = "Faulty limit position monitoring"
+X_Unit_Diag_Bit_Help(108) = "Check controls electronics and actuator mechanics."
+X_Unit_Diag_Bit(109)      = "Motor overload"
+X_Unit_Diag_Bit_Help(109) = "Check actuator operating conditions and \
+installation."
+X_Unit_Diag_Bit(110)      = "Oil quality off-spec"
+X_Unit_Diag_Bit_Help(110) = "Plan maintenance, exchange oil."
+X_Unit_Diag_Bit(111)      = "Oil loss"
+X_Unit_Diag_Bit_Help(111) = "Plan maintenance, check seals."
+
+X_Unit_Diag_Bit(112)      = "Blocked drive"
+X_Unit_Diag_Bit_Help(112) = "Check actuator mechanics and installation."
+X_Unit_Diag_Bit(113)      = "Off-spec seat/plug leakage"
+X_Unit_Diag_Bit_Help(113) = "Check installation. Check seat/plug."
+X_Unit_Diag_Bit(114)      = "Off-spec spindle/shaft seal leak"
+X_Unit_Diag_Bit_Help(114) = "Check installation. Check spindle/shaft."
+X_Unit_Diag_Bit(115)      = "Alteration and wear on spindle"
+X_Unit_Diag_Bit_Help(115) = "Plan maintenance. Replace spindle."
+X_Unit_Diag_Bit(116)      = "Altered friction"
+X_Unit_Diag_Bit_Help(116) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+X_Unit_Diag_Bit(117)      = "Wear in the valve"
+X_Unit_Diag_Bit_Help(117) = "Check installation. Plan maintenance."
+X_Unit_Diag_Bit(118)      = "Blocked valve"
+X_Unit_Diag_Bit_Help(118) = "Check installation. Check actuator mechanics \
+and power supply."
+X_Unit_Diag_Bit(119)      = "Change in valve move performance"
+X_Unit_Diag_Bit_Help(119) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+
+X_Unit_Diag_Bit(120)      = "Changed breakaway moment"
+X_Unit_Diag_Bit_Help(120) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+X_Unit_Diag_Bit(121)      = "Spindle deformation"
+X_Unit_Diag_Bit_Help(121) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+X_Unit_Diag_Bit(122)      = "Plug torn off"
+X_Unit_Diag_Bit_Help(122) = "Plan maintenance. Check operating conditions."
+X_Unit_Diag_Bit(123)      = "Off-spec valve temperature"
+X_Unit_Diag_Bit_Help(123) = "Check operating conditions."
+X_Unit_Diag_Bit(124)      = "Off-spec characteristic line"
+X_Unit_Diag_Bit_Help(124) = "Check operating conditions. Plan maintenance."
+;X_Unit_Diag_Bit(125)      = ""
+;X_Unit_Diag_Bit_Help(125) = ""
+X_Unit_Diag_Bit(126)      = "Incorrect position sensing"
+X_Unit_Diag_Bit_Help(126) = "Check position sensor electronics and actuator \
+mechanics."
+X_Unit_Diag_Bit(127)      = "Input signal off-spec"
+X_Unit_Diag_Bit_Help(127) = "Check input signal."
+
+X_Unit_Diag_Bit(128)      = "Vibration off-spec"
+X_Unit_Diag_Bit_Help(128) = "Check operating conditions. Plan maintenance."
+X_Unit_Diag_Bit(129)      = "Temp in positioner too high/low"
+X_Unit_Diag_Bit_Help(129) = "Check operating conditions."
+X_Unit_Diag_Bit(130)      = "Moisture in positioner"
+X_Unit_Diag_Bit_Help(130) = "Plan maintenance. Check seals."
+X_Unit_Diag_Bit(131)      = "Additional IO module defect"
+X_Unit_Diag_Bit_Help(131) = "Plan maintenance. Replace IO module."
+X_Unit_Diag_Bit(132)      = "Signal without end position"
+X_Unit_Diag_Bit_Help(132) = "Check limit switch/position sensor."
+X_Unit_Diag_Bit(133)      = "No signal in end position"
+X_Unit_Diag_Bit_Help(133) = "Check limit switch/position sensor."
+X_Unit_Diag_Bit(134)      = "Control loop oscillation"
+X_Unit_Diag_Bit_Help(134) = "Check operating conditions. Check control \
+loop configuration."
+X_Unit_Diag_Bit(135)      = "Hysteresis"
+X_Unit_Diag_Bit_Help(135) = "Check configuration. Check controls \
+electronics and actuator mechanics."
+
+X_Unit_Diag_Bit(136)      = "Changed friction"
+X_Unit_Diag_Bit_Help(136) = "Check installation. Check actuator mechanics. \
+Plan maintenance."
+X_Unit_Diag_Bit(137)      = "Backlash between drive and valve"
+X_Unit_Diag_Bit_Help(137) = "Check installation."
+X_Unit_Diag_Bit(138)      = "Persistent deviation of control"
+X_Unit_Diag_Bit_Help(138) = "Check configuration."
+X_Unit_Diag_Bit(139)      = "Inadmissible dynamic stress"
+X_Unit_Diag_Bit_Help(139) = "Check operating conditions. Plan maintenance."
+X_Unit_Diag_Bit(140)      = "Faulty mounting"
+X_Unit_Diag_Bit_Help(140) = "Check installation."
+X_Unit_Diag_Bit(141)      = "Faulty mount positioner to motor"
+X_Unit_Diag_Bit_Help(141) = "Check installation."
+X_Unit_Diag_Bit(142)      = "Leak in piping"
+X_Unit_Diag_Bit_Help(142) = "Check installation."
+X_Unit_Diag_Bit(143)      = "Insufficient drive power"
+X_Unit_Diag_Bit_Help(143) = "Check actuator power  supply and mechanics. \
+Check operating conditions. Plan maintenance."
+
+;X_Unit_Diag_Bit(144)      = ""
+;X_Unit_Diag_Bit_Help(144) = ""
+X_Unit_Diag_Bit(145)      = "Operator error during operation"
+X_Unit_Diag_Bit_Help(145) = "Restart device. Check if failure recurs. \
+Replacement is recommended."
+X_Unit_Diag_Bit(146)      = "Inadmissible static stress"
+X_Unit_Diag_Bit_Help(146) = "Check operating conditions. Plan maintenance."
+X_Unit_Diag_Bit(147)      = "Recording of pers. control dev."
+X_Unit_Diag_Bit_Help(147) = "Check configuration."
+X_Unit_Diag_Bit(148)      = "Parameter plausibility check"
+X_Unit_Diag_Bit_Help(148) = "Check configuration."
+X_Unit_Diag_Bit(149)      = "Status report on operating mode"
+X_Unit_Diag_Bit_Help(149) = "Check operating conditions."
+X_Unit_Diag_Bit(150)      = "Histogram for valve positions"
+X_Unit_Diag_Bit_Help(150) = "Check operating conditions. Check installation. \
+Plan maintenance."
+X_Unit_Diag_Bit(151)      = "Zero point and endpoint shift"
+X_Unit_Diag_Bit_Help(151) = "Check operating conditions. Check installation. \
+Plan maintenance."
+
+X_Unit_Diag_Bit(152)      = "Running time monitoring"
+X_Unit_Diag_Bit_Help(152) = "Check operating conditions. Plan maintenance."
+X_Unit_Diag_Bit(153)      = "Evaluation of internal signals"
+X_Unit_Diag_Bit_Help(153) = "Check controls electronics."
+X_Unit_Diag_Bit(154)      = "Operating hours counter"
+X_Unit_Diag_Bit_Help(154) = "Plan maintenance."
+X_Unit_Diag_Bit(155)      = "Pressure-displacement diagram"
+;X_Unit_Diag_Bit_Help(155) = ""
+X_Unit_Diag_Bit(156)      = "Total valve travel"
+X_Unit_Diag_Bit_Help(156) = "Check installation. Plan maintenance."
+X_Unit_Diag_Bit(157)      = "Step response diagnostics"
+X_Unit_Diag_Bit_Help(157) = "Check operating conditions. Check installation. \
+Plan maintenance."
+X_Unit_Diag_Bit(158)      = "Internal temperature monitoring"
+X_Unit_Diag_Bit_Help(158) = "Check operating conditions. Plan maintenance."
+X_Unit_Diag_Bit(159)      = "Counter for direction changes"
+X_Unit_Diag_Bit_Help(159) = "Plan maintenance."
+
+X_Unit_Diag_Bit(160)      = "Operating archive"
+X_Unit_Diag_Bit_Help(160) = "Check operating archive."
+X_Unit_Diag_Bit(161)      = "Report archive"
+X_Unit_Diag_Bit_Help(161) = "Check report archive."
+X_Unit_Diag_Bit(162)      = "Status reports on access control"
+X_Unit_Diag_Bit_Help(162) = "Check unauthorized access."
+X_Unit_Diag_Bit(163)      = "Cavitation / flashing"
+X_Unit_Diag_Bit_Help(163) = "Check operating conditions. Check installation. \
+Plan maintenance."
+X_Unit_Diag_Bit(164)      = "Partial stroke test"
+X_Unit_Diag_Bit_Help(164) = "Check controls electronics and actuator mechanics."
+X_Unit_Diag_Bit(165)      = "P dif measurement across valve"
+X_Unit_Diag_Bit_Help(165) = "Check operating conditions. Check installation. \
+Plan maintenance."
+X_Unit_Diag_Bit(166)      = "Noise level measurement"
+X_Unit_Diag_Bit_Help(166) = "Check operating conditions. Check installation. \
+Plan maintenance."
+;X_Unit_Diag_Bit(167)      = ""
+;X_Unit_Diag_Bit_Help(167) = ""
+
+EndUnitDiagType
+
+;-------------------------------------------------------------------------
+;
+;max module text length-----------------"
+Module="Not in cyclic data transfer     " 0x00    ;Empty module
+0
+Info_Text="No cyclic data selected for this slot. Function disabled"
+EndModule
+
+Module="SP" 0x82, 0x84, 0x08, 0x05
+1
+EndModule
+
+Module="SP, READBACK, POS_D" 0xC6,0x84,0x86,0x08,0x05,0x08,0x05,0x05,0x05
+2
+EndModule
+
+Module="SP, CHECK_BACK" 0xC3,0x84,0x82,0x08,0x05,0x0A
+3
+EndModule
+
+Module="SP, READBACK, POS_D, CHECK_BACK" 0xC7,0x84,0x89,0x08,0x05,0x08,0x05,\
+0x05,0x05,0x0A
+4
+EndModule
+
+;----------- Description of the module assignment: ---------------------
+;
+SlotDefinition
+Slot(1) = "<Actuator>" 1 1-4
+EndSlotDefinition

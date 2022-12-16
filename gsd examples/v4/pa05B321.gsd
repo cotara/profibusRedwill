@@ -1,0 +1,575 @@
+;------------------------------------------------------------------------------
+; This GSD (General Station Description) is provided by PI C3PG7 "PA Profile".
+; This GSD is available for download at PI web server.
+; The Profile GSDs cover the common subset of functions of devices of
+; a specific PA device type providing interchangeability.
+; 
+; This file describes the device type:
+;  Radar level transmitter 
+;  with 2 Analog Inputs
+;  Physical layer RS-485.
+; This file becomes valid with the PA profile version 4.0.
+;
+; Last modification: 2017-10-20
+;------------------------------------------------------------------------------
+#Profibus_DP
+
+;Standard definitions, valid for all device types with RS-485
+GSD_Revision        = 5
+Vendor_Name         = "Profile Process Control Devices"
+Revision            = "PA 4.x"
+Protocol_Ident      = 0
+Station_Type        = 0
+FMS_supp            = 0
+Hardware_Release    = "-"
+Software_Release    = "-"
+9.6_supp            = 1
+19.2_supp           = 1
+45.45_supp          = 1
+93.75_supp          = 1
+187.5_supp          = 1 ;needed to support spec. network devices
+500_supp            = 1 ;needed to support spec. network devices
+1.5M_supp           = 1 ;needed to support spec. network devices
+3M_supp             = 1 ;needed to support spec. network devices
+6M_supp             = 1 ;needed to support spec. network devices
+12M_supp            = 1 ;needed to support spec. network devices
+MaxTsdr_9.6         = 60
+MaxTsdr_19.2        = 60
+MaxTsdr_45.45       = 250 ;exception for spec. network devices
+MaxTsdr_93.75       = 60
+MaxTsdr_187.5       = 60
+MaxTsdr_500         = 100
+MaxTsdr_1.5M        = 150
+MaxTsdr_3M          = 250
+MaxTsdr_6M          = 450
+MaxTsdr_12M         = 800
+Redundancy          = 0
+Repeater_Ctrl_Sig   = 0
+24V_Pins            = 0
+Freeze_Mode_supp    = 0
+Sync_Mode_supp      = 0
+Auto_Baud_supp      = 1
+Set_Slave_Add_supp  = 1
+Min_Slave_Intervall = 6
+Modular_Station     = 1
+Slave_Family        = 12@Profile4
+;end of standard definitions
+
+;Device type specific definitions
+Model_Name          = "Radar level (PhyL 0)"
+Ident_Number        = 0xB321
+Bitmap_Device       = "PA_B321n"
+Max_Module          = 2
+Max_Input_Len       = 10 ;2*AI(2*5)
+Max_Output_Len      = 0
+Max_Data_Len        = 10
+Max_Diag_Data_Len   = 37
+Modul_Offset        = 1
+Max_User_Prm_Data_Len = 22
+Ext_User_Prm_Data_Const(0) = 0x80 ;DPV1 Status 1
+Ext_User_Prm_Data_Const(1) = 0x00 ;DPV1 Status 2
+Ext_User_Prm_Data_Const(2) = 0x08 ;DPV1 Status 3
+
+
+;--- Startup parameter of the Physical Block (Slot 0)
+PrmText             = 1 ;STARTUP_PARAM_VALIDITY
+Text(0)             = "Ignored"
+Text(1)             = "Applied"
+EndPrmText
+
+ExtUserPrmData      = 1 "Startup parameters"
+Unsigned8 0 0-1
+Prm_Text_Ref        = 1
+EndExtUserPrmData
+
+Ext_User_Prm_Data_Const(3) = 5,66,0,0,0x00
+Ext_User_Prm_Data_Ref(7)   = 1 ;STARTUP_PARAM_VALIDITY (Unsigned8)
+
+
+;--- Startup parameter of the transducer block - Radar level (Slot 1)
+PrmText             = 2 ;Level units
+Text(1010)          = "m"
+Text(1018)          = "ft"
+EndPrmText
+
+ExtUserPrmData      = 2 "Unit (Level, Distance)"    
+Unsigned16 1010 0-65535
+Prm_Text_Ref        = 2
+EndExtUserPrmData
+
+Ext_User_Prm_Data_Const(8) = 6,68,1,0,0x03,0xf2
+Ext_User_Prm_Data_Ref(12)  = 2 ;level unit (Unsigned16)
+
+
+
+Prm_Block_Structure_supp = 1
+PrmCmd_supp         = 1 ;slave supports PrmCmd
+Slave_Max_Switch_Over_Time = 20 ;=200 ms
+Slave_Redundancy_supp = 1 ;slave is not redundant but can be connected to a flying master
+
+
+Info_Text = "Radar level transmitter with PROFIBUS DP \
+communication interface."
+
+Ident_Maintenance_supp=1
+
+
+;----------- Description of extended DP features: ---------------------
+;
+DPV1_Slave          = 1
+C1_Read_Write_supp  = 1
+C1_Max_Data_Len     = 128
+C1_Response_Timeout = 1000
+C2_Read_Write_supp  = 1
+C2_Max_Data_Len     = 128
+C2_Max_Count_Channels = 1
+Max_Initiate_PDU_Length = 52
+C2_Response_Timeout = 1000
+DPV1_Data_Types     = 0
+WD_Base_1ms_supp    = 0
+Check_Cfg_Mode      = 0
+
+
+
+
+;----------- Description of device related diagnosis: ---------------------
+;
+Unit_Diag_Bit(16)   = "Status appears"
+Unit_Diag_Bit(17)   = "Status disappears"
+Unit_Diag_Bit(35)   = "Restart" ;DIA_WARMSTART
+Unit_Diag_Bit(36)   = "Application reset" ;DIA_COLDSTART
+Unit_Diag_Bit(37)   = "Maintenance required" ;DIA_MAINTENANCE
+Unit_Diag_Bit(40)   = "Maintenance alarm" ;DIA_MAINTENANCE_ALARM
+Unit_Diag_Bit(41)   = "Maintenance demanded" ;DIA_MAINTENANCE_DEMANDED
+Unit_Diag_Bit(42)   = "Function check" ;DIA_FUNCTION_CHECK
+Unit_Diag_Bit(43)   = "Out of specification" ;DIA_OUT_OF_SPEC
+Unit_Diag_Bit(44)   = "Parameter update" ;DIA_UPDATE_EVENT
+Unit_Diag_Bit(55)   = "Extension available" 
+
+;NE107_COMMON
+Unit_Diag_Bit(56)      = "Sensor element exciter faulty"
+Unit_Diag_Bit_Help(56) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(57)      = "Error in evaluation electronics"
+Unit_Diag_Bit_Help(57) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(58)      = "Error in internal energy supply"
+Unit_Diag_Bit_Help(58) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(59)      = "Error in sensor element"
+Unit_Diag_Bit_Help(59) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(60)      = "Error in actuator element"
+Unit_Diag_Bit_Help(60) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(61)      = "Faulty installat e.g. dead space"
+Unit_Diag_Bit_Help(61) = "Check installation."
+Unit_Diag_Bit(62)      = "Parameter setting error"
+Unit_Diag_Bit_Help(62) = "Check parameter settings for consistency."
+Unit_Diag_Bit(63)      = "Signal path broken or short cut"
+Unit_Diag_Bit_Help(63) = "Check signal path."
+Unit_Diag_Bit(64)      = "Overloading"
+Unit_Diag_Bit_Help(64) = "Check load."
+Unit_Diag_Bit(65)      = "Wrong polarity of aux power"
+Unit_Diag_Bit_Help(65) = "Check polarity."
+Unit_Diag_Bit(66)      = "Maximum line length exceeded"
+Unit_Diag_Bit_Help(66) = "Check line length."
+Unit_Diag_Bit(67)      = "Corrosion/abrasion by medium"
+Unit_Diag_Bit_Help(67) = "Replacement is recommended."
+Unit_Diag_Bit(68)      = "Fouling on sensor element"
+Unit_Diag_Bit_Help(68) = "Cleaning is recommended."
+Unit_Diag_Bit(69)      = "Auxil medium missing or insuffic"
+Unit_Diag_Bit_Help(69) = "Check auxiliary medium."
+Unit_Diag_Bit(70)      = "Wear reserve used up (operation)"
+Unit_Diag_Bit_Help(70) = "Plan maintenance."
+Unit_Diag_Bit(71)      = "Wear reserve used up (wear)"
+Unit_Diag_Bit_Help(71) = "Plan maintenance."
+Unit_Diag_Bit(72)      = "Error in peripherals"
+Unit_Diag_Bit_Help(72) = "Check peripherals."
+Unit_Diag_Bit(73)      = "Electromag interference too high"
+Unit_Diag_Bit_Help(73) = "Lower external electromagnetic interference."
+Unit_Diag_Bit(74)      = "Temperature of medium too high"
+Unit_Diag_Bit_Help(74) = "Check that the device is operated within its \
+specifications."
+Unit_Diag_Bit(75)      = "Ambient temperature too high"
+Unit_Diag_Bit_Help(75) = "Check that the device is operated within its \
+specifications."
+Unit_Diag_Bit(76)      = "Vibration/Impact load too high"
+Unit_Diag_Bit_Help(76) = "Check that the device is operated within its \
+specifications."
+Unit_Diag_Bit(77)      = "Auxiliary power range off-spec"
+Unit_Diag_Bit_Help(77) = "Check power supply"
+Unit_Diag_Bit(78)      = "Auxiliary medium missing"
+Unit_Diag_Bit_Help(78) = "Check auxiliary medium."
+Unit_Diag_Bit(79)      = "Excessive temperature shock"
+Unit_Diag_Bit_Help(79) = "Check that the device is operated within its \
+specifications."
+Unit_Diag_Bit(80)      = "Deviation from measurement"
+Unit_Diag_Bit_Help(80) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(81)      = "Humidity in electronics area"
+Unit_Diag_Bit_Help(81) = "Replacement is recommended."
+Unit_Diag_Bit(82)      = "Medium in electronics area"
+Unit_Diag_Bit_Help(82) = "Replacement is recommended."
+Unit_Diag_Bit(83)      = "Mechanical damage"
+Unit_Diag_Bit_Help(83) = "Replacement is recommended."
+Unit_Diag_Bit(84)      = "Communication error"
+Unit_Diag_Bit_Help(84) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+Unit_Diag_Bit(85)      = "Foreign material in electro area"
+Unit_Diag_Bit_Help(85) = "Replacement is recommended."
+
+;NE107_RADAR (device specific)
+Unit_Diag_Bit(104)      = "Change of running time, encrust?"
+Unit_Diag_Bit_Help(104) = "Remove encrustation."
+Unit_Diag_Bit(105)      = "False echoes, encrustation?"
+Unit_Diag_Bit_Help(105) = "Remove encrustation."
+Unit_Diag_Bit(106)      = "Wrong/no indication, foam"
+Unit_Diag_Bit_Help(106) = "Check process conditions."
+Unit_Diag_Bit(107)      = "Poor reflection"
+Unit_Diag_Bit_Help(107) = "1. Check process conditions. 2. Check \
+installation according to the installation instructions of the manufacturer."
+Unit_Diag_Bit(108)      = "Problems with tank wall"
+Unit_Diag_Bit_Help(108) = "Check installation according to the installation \
+instructions of the manufacturer."
+Unit_Diag_Bit(109)      = "Surge tube or vent blocked"
+Unit_Diag_Bit_Help(109) = "Clean surge tube or venting."
+Unit_Diag_Bit(110)      = "Nozzle too long/high"
+Unit_Diag_Bit_Help(110) = "Check installation according to the installation \
+instructions of the manufacturer."
+Unit_Diag_Bit(111)      = "No metallic reflecting surface"
+Unit_Diag_Bit_Help(111) = "Check installation according to the installation \
+instructions of the manufacturer."
+
+Unit_Diag_Bit(112)      = "Blocking distance underrun"
+Unit_Diag_Bit_Help(112) = "Check process conditions."
+Unit_Diag_Bit(113)      = "Mechanical overloading of probe"
+Unit_Diag_Bit_Help(113) = "1. Check process conditions. 2. Check \
+installation according to the installation instructions of the manufacturer."
+Unit_Diag_Bit(114)      = "Probe lost or torn off"
+Unit_Diag_Bit_Help(114) = "Maintenance is required (check process \
+conditions to avoid further defects)."
+Unit_Diag_Bit(115)      = "Overload by external power"
+Unit_Diag_Bit_Help(115) = "Reduce external power."
+Unit_Diag_Bit(116)      = "Product or moisture in coupler"
+Unit_Diag_Bit_Help(116) = "Replacement is recommended."
+Unit_Diag_Bit(117)      = "Change of microwave speed"
+Unit_Diag_Bit_Help(117) = "1. Check process conditions. \
+2. Adapt configuration."
+Unit_Diag_Bit(118)      = "Corr,abras, coating detachment"
+Unit_Diag_Bit_Help(118) = "Plan maintenance for cleaning/replacing."
+Unit_Diag_Bit(119)      = "Probe in filling flow"
+Unit_Diag_Bit_Help(119) = "Check installation according to the installation \
+instructions of the manufacturer."
+
+;Unit_Diag_Bit(120)     = ""
+;Unit_Diag_Bit(121)     = ""
+;Unit_Diag_Bit(122)     = ""
+;Unit_Diag_Bit(123)     = ""
+;Unit_Diag_Bit(124)     = ""
+;Unit_Diag_Bit(125)     = ""
+;Unit_Diag_Bit(126)     = ""
+;Unit_Diag_Bit(127)     = ""
+
+;Unit_Diag_Bit(128)     = ""
+;Unit_Diag_Bit(129)     = ""
+;Unit_Diag_Bit(130)     = ""
+;Unit_Diag_Bit(131)     = ""
+;Unit_Diag_Bit(132)     = ""
+;Unit_Diag_Bit(133)     = ""
+;Unit_Diag_Bit(134)     = ""
+;Unit_Diag_Bit(135)     = ""
+
+Unit_Diag_Bit(136)      = "No clear interface Emulsion?"
+Unit_Diag_Bit_Help(136) = "Check process conditions."
+Unit_Diag_Bit(137)      = "Wrong indication param setting"
+Unit_Diag_Bit_Help(137) = "Check device configuration."
+Unit_Diag_Bit(138)      = "Diff dielecon too small"
+Unit_Diag_Bit_Help(138) = "Check process conditions."
+Unit_Diag_Bit(139)      = "More than one interface"
+Unit_Diag_Bit_Help(139) = "Check process conditions."
+Unit_Diag_Bit(140)      = "First phase thickness too small"
+Unit_Diag_Bit_Help(140) = "Check process conditions."
+;Unit_Diag_Bit(141)     = ""
+;Unit_Diag_Bit(142)     = ""
+;Unit_Diag_Bit(143)     = ""
+
+Unit_Diag_Bit(144)      = "Attenuation due to deposits"
+Unit_Diag_Bit_Help(144) = "Remove deposits."
+Unit_Diag_Bit(145)      = "False echoes due to deposits"
+Unit_Diag_Bit_Help(145) = "Remove deposits."
+Unit_Diag_Bit(146)      = "Corrosion surge tube (inside)"
+Unit_Diag_Bit_Help(146) = "Replacement is recommended."
+Unit_Diag_Bit(147)      = "Impurity in wave coupler area"
+Unit_Diag_Bit_Help(147) = "Replacement is recommended."
+Unit_Diag_Bit(148)      = "Antenna immersed in product"
+Unit_Diag_Bit_Help(148) = "Increase distance between product and antenna."
+Unit_Diag_Bit(149)      = "Wrong signal due to foam"
+Unit_Diag_Bit_Help(149) = "Check process conditions."
+Unit_Diag_Bit(150)      = "Strong signal attenuation"
+Unit_Diag_Bit_Help(150) = "1. Check process conditions. 2. Check \
+installation according to the installation instructions of the manufacturer."
+Unit_Diag_Bit(151)      = "Shift of radar signal speed"
+Unit_Diag_Bit_Help(151) = "Check process conditions."
+
+Unit_Diag_Bit(152)      = "Reflection"
+Unit_Diag_Bit_Help(152) = "Check process conditions."
+Unit_Diag_Bit(153)      = "False interpretation of the echo"
+Unit_Diag_Bit_Help(153) = "Perform empty spectrum calibration."
+Unit_Diag_Bit(154)      = "Bad polarization of the signal"
+Unit_Diag_Bit_Help(154) = "Check installation according to the installation \
+instructions of the manufacturer."
+Unit_Diag_Bit(155)      = "Surge tube or vent blocked"
+Unit_Diag_Bit_Help(155) = "Clean surge tube or venting."
+Unit_Diag_Bit(156)      = "Nozzle too long for antenna"
+Unit_Diag_Bit_Help(156) = "Check installation according to the installation \
+instructions of the manufacturer."
+Unit_Diag_Bit(157)      = "Wall clearance, not vertical"
+Unit_Diag_Bit_Help(157) = "Check installation according to the installation \
+instructions of the manufacturer."
+Unit_Diag_Bit(158)      = "Corrosion on antenna"
+Unit_Diag_Bit_Help(158) = "Replacement is recommended."
+Unit_Diag_Bit(159)      = "Attenuation due to fog or dust"
+Unit_Diag_Bit_Help(159) = "Check process conditions."
+
+Unit_Diag_Bit(160)      = "Antenna signal blocked"
+Unit_Diag_Bit_Help(160) = "Check installation according to the installation \
+instructions of the manufacturer."
+Unit_Diag_Bit(161)      = "Blocking distance under-run"
+Unit_Diag_Bit_Help(161) = "Check process conditions."
+Unit_Diag_Bit(162)      = "Echo too strong (overmodulation)"
+Unit_Diag_Bit_Help(162) = "Check installation according to the installation \
+instructions of the manufacturer."
+
+;---------------
+UnitDiagType=254
+X_Unit_Diag_Bit(35) = "Restart" ;DIA_WARMSTART
+X_Unit_Diag_Bit(36) = "Application reset" ;DIA_COLDSTART
+X_Unit_Diag_Bit(37) = "Maintenance required" ;DIA_MAINTENANCE
+X_Unit_Diag_Bit(40) = "Maintenance alarm" ;DIA_MAINTENANCE_ALARM
+X_Unit_Diag_Bit(41) = "Maintenance demanded" ;DIA_MAINTENANCE_DEMANDED
+X_Unit_Diag_Bit(42) = "Function check" ;DIA_FUNCTION_CHECK
+X_Unit_Diag_Bit(43) = "Out of specification" ;DIA_OUT_OF_SPEC
+X_Unit_Diag_Bit(44) = "Parameter update" ;DIA_UPDATE_EVENT
+X_Unit_Diag_Bit(55) = "Extension available"
+
+;--- NE107_COMMON
+X_Unit_Diag_Bit(56)      = "Sensor element exciter faulty"
+X_Unit_Diag_Bit_Help(56) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(57)      = "Error in evaluation electronics"
+X_Unit_Diag_Bit_Help(57) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(58)      = "Error in internal energy supply"
+X_Unit_Diag_Bit_Help(58) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(59)      = "Error in sensor element"
+X_Unit_Diag_Bit_Help(59) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(60)      = "Error in actuator element"
+X_Unit_Diag_Bit_Help(60) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(61)      = "Faulty installat e.g. dead space"
+X_Unit_Diag_Bit_Help(61) = "Check installation."
+X_Unit_Diag_Bit(62)      = "Parameter setting error"
+X_Unit_Diag_Bit_Help(62) = "Check parameter settings for consistency."
+X_Unit_Diag_Bit(63)      = "Signal path broken or short cut"
+X_Unit_Diag_Bit_Help(63) = "Check signal path."
+X_Unit_Diag_Bit(64)      = "Overloading"
+X_Unit_Diag_Bit_Help(64) = "Check load."
+X_Unit_Diag_Bit(65)      = "Wrong polarity of aux power"
+X_Unit_Diag_Bit_Help(65) = "Check polarity."
+X_Unit_Diag_Bit(66)      = "Maximum line length exceeded"
+X_Unit_Diag_Bit_Help(66) = "Check line length."
+X_Unit_Diag_Bit(67)      = "Corrosion/abrasion by medium"
+X_Unit_Diag_Bit_Help(67) = "Replacement is recommended."
+X_Unit_Diag_Bit(68)      = "Fouling on sensor element"
+X_Unit_Diag_Bit_Help(68) = "Cleaning is recommended."
+X_Unit_Diag_Bit(69)      = "Auxil medium missing or insuffic"
+X_Unit_Diag_Bit_Help(69) = "Check auxiliary medium."
+X_Unit_Diag_Bit(70)      = "Wear reserve used up (operation)"
+X_Unit_Diag_Bit_Help(70) = "Plan maintenance."
+X_Unit_Diag_Bit(71)      = "Wear reserve used up (wear)"
+X_Unit_Diag_Bit_Help(71) = "Plan maintenance."
+X_Unit_Diag_Bit(72)      = "Error in peripherals"
+X_Unit_Diag_Bit_Help(72) = "Check peripherals."
+X_Unit_Diag_Bit(73)      = "Electromag interference too high"
+X_Unit_Diag_Bit_Help(73) = "Lower external electromagnetic interference."
+X_Unit_Diag_Bit(74)      = "Temperature of medium too high"
+X_Unit_Diag_Bit_Help(74) = "Check that the device is operated within its \
+specifications."
+X_Unit_Diag_Bit(75)      = "Ambient temperature too high"
+X_Unit_Diag_Bit_Help(75) = "Check that the device is operated within its \
+specifications."
+X_Unit_Diag_Bit(76)      = "Vibration/Impact load too high"
+X_Unit_Diag_Bit_Help(76) = "Check that the device is operated within its \
+specifications."
+X_Unit_Diag_Bit(77)      = "Auxiliary power range off-spec"
+X_Unit_Diag_Bit_Help(77) = "Check power supply"
+X_Unit_Diag_Bit(78)      = "Auxiliary medium missing"
+X_Unit_Diag_Bit_Help(78) = "Check auxiliary medium."
+X_Unit_Diag_Bit(79)      = "Excessive temperature shock"
+X_Unit_Diag_Bit_Help(79) = "Check that the device is operated within its \
+specifications."
+X_Unit_Diag_Bit(80)      = "Deviation from measurement"
+X_Unit_Diag_Bit_Help(80) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(81)      = "Humidity in electronics area"
+X_Unit_Diag_Bit_Help(81) = "Replacement is recommended."
+X_Unit_Diag_Bit(82)      = "Medium in electronics area"
+X_Unit_Diag_Bit_Help(82) = "Replacement is recommended."
+X_Unit_Diag_Bit(83)      = "Mechanical damage"
+X_Unit_Diag_Bit_Help(83) = "Replacement is recommended."
+X_Unit_Diag_Bit(84)      = "Communication error"
+X_Unit_Diag_Bit_Help(84) = "1. Restart device. 2. Check if failure recurs. \
+3. Replacement is recommended."
+X_Unit_Diag_Bit(85)      = "Foreign material in electro area"
+X_Unit_Diag_Bit_Help(85) = "Replacement is recommended."
+
+;NE107_RADAR (device specific)
+X_Unit_Diag_Bit(104)      = "Change of running time, encrust?"
+X_Unit_Diag_Bit_Help(104) = "Remove encrustation."
+X_Unit_Diag_Bit(105)      = "False echoes, encrustation?"
+X_Unit_Diag_Bit_Help(105) = "Remove encrustation."
+X_Unit_Diag_Bit(106)      = "Wrong/no indication, foam"
+X_Unit_Diag_Bit_Help(106) = "Check process conditions."
+X_Unit_Diag_Bit(107)      = "Poor reflection"
+X_Unit_Diag_Bit_Help(107) = "1. Check process conditions. 2. Check \
+installation according to the installation instructions of the manufacturer."
+X_Unit_Diag_Bit(108)      = "Problems with tank wall"
+X_Unit_Diag_Bit_Help(108) = "Check installation according to the installation \
+instructions of the manufacturer."
+X_Unit_Diag_Bit(109)      = "Surge tube or vent blocked"
+X_Unit_Diag_Bit_Help(109) = "Clean surge tube or venting."
+X_Unit_Diag_Bit(110)      = "Nozzle too long/high"
+X_Unit_Diag_Bit_Help(110) = "Check installation according to the installation \
+instructions of the manufacturer."
+X_Unit_Diag_Bit(111)      = "No metallic reflecting surface"
+X_Unit_Diag_Bit_Help(111) = "Check installation according to the installation \
+instructions of the manufacturer."
+
+X_Unit_Diag_Bit(112)      = "Blocking distance underrun"
+X_Unit_Diag_Bit_Help(112) = "Check process conditions."
+X_Unit_Diag_Bit(113)      = "Mechanical overloading of probe"
+X_Unit_Diag_Bit_Help(113) = "1. Check process conditions. 2. Check \
+installation according to the installation instructions of the manufacturer."
+X_Unit_Diag_Bit(114)      = "Probe lost or torn off"
+X_Unit_Diag_Bit_Help(114) = "Maintenance is required (check process \
+conditions to avoid further defects)."
+X_Unit_Diag_Bit(115)      = "Overload by external power"
+X_Unit_Diag_Bit_Help(115) = "Reduce external power."
+X_Unit_Diag_Bit(116)      = "Product or moisture in coupler"
+X_Unit_Diag_Bit_Help(116) = "Replacement is recommended."
+X_Unit_Diag_Bit(117)      = "Change of microwave speed"
+X_Unit_Diag_Bit_Help(117) = "1. Check process conditions. \
+2. Adapt configuration."
+X_Unit_Diag_Bit(118)      = "Corr,abras, coating detachment"
+X_Unit_Diag_Bit_Help(118) = "Plan maintenance for cleaning/replacing."
+X_Unit_Diag_Bit(119)      = "Probe in filling flow"
+X_Unit_Diag_Bit_Help(119) = "Check installation according to the installation \
+instructions of the manufacturer."
+
+;X_Unit_Diag_Bit(120)     = ""
+;X_Unit_Diag_Bit(121)     = ""
+;X_Unit_Diag_Bit(122)     = ""
+;X_Unit_Diag_Bit(123)     = ""
+;X_Unit_Diag_Bit(124)     = ""
+;X_Unit_Diag_Bit(125)     = ""
+;X_Unit_Diag_Bit(126)     = ""
+;X_Unit_Diag_Bit(127)     = ""
+
+;X_Unit_Diag_Bit(128)     = ""
+;X_Unit_Diag_Bit(129)     = ""
+;X_Unit_Diag_Bit(130)     = ""
+;X_Unit_Diag_Bit(131)     = ""
+;X_Unit_Diag_Bit(132)     = ""
+;X_Unit_Diag_Bit(133)     = ""
+;X_Unit_Diag_Bit(134)     = ""
+;X_Unit_Diag_Bit(135)     = ""
+
+X_Unit_Diag_Bit(136)      = "No clear interface Emulsion?"
+X_Unit_Diag_Bit_Help(136) = "Check process conditions."
+X_Unit_Diag_Bit(137)      = "Wrong indication param setting"
+X_Unit_Diag_Bit_Help(137) = "Check device configuration."
+X_Unit_Diag_Bit(138)      = "Diff dielecon too small"
+X_Unit_Diag_Bit_Help(138) = "Check process conditions."
+X_Unit_Diag_Bit(139)      = "More than one interface"
+X_Unit_Diag_Bit_Help(139) = "Check process conditions."
+X_Unit_Diag_Bit(140)      = "First phase thickness too small"
+X_Unit_Diag_Bit_Help(140) = "Check process conditions."
+;X_Unit_Diag_Bit(141)     = ""
+;X_Unit_Diag_Bit(142)     = ""
+;X_Unit_Diag_Bit(143)     = ""
+
+X_Unit_Diag_Bit(144)      = "Attenuation due to deposits"
+X_Unit_Diag_Bit_Help(144) = "Remove deposits."
+X_Unit_Diag_Bit(145)      = "False echoes due to deposits"
+X_Unit_Diag_Bit_Help(145) = "Remove deposits."
+X_Unit_Diag_Bit(146)      = "Corrosion surge tube (inside)"
+X_Unit_Diag_Bit_Help(146) = "Replacement is recommended."
+X_Unit_Diag_Bit(147)      = "Impurity in wave coupler area"
+X_Unit_Diag_Bit_Help(147) = "Replacement is recommended."
+X_Unit_Diag_Bit(148)      = "Antenna immersed in product"
+X_Unit_Diag_Bit_Help(148) = "Increase distance between product and antenna."
+X_Unit_Diag_Bit(149)      = "Wrong signal due to foam"
+X_Unit_Diag_Bit_Help(149) = "Check process conditions."
+X_Unit_Diag_Bit(150)      = "Strong signal attenuation"
+X_Unit_Diag_Bit_Help(150) = "1. Check process conditions. 2. Check \
+installation according to the installation instructions of the manufacturer."
+X_Unit_Diag_Bit(151)      = "Shift of radar signal speed"
+X_Unit_Diag_Bit_Help(151) = "Check process conditions."
+
+X_Unit_Diag_Bit(152)      = "Reflection"
+X_Unit_Diag_Bit_Help(152) = "Check process conditions."
+X_Unit_Diag_Bit(153)      = "False interpretation of the echo"
+X_Unit_Diag_Bit_Help(153) = "Perform empty spectrum calibration."
+X_Unit_Diag_Bit(154)      = "Bad polarization of the signal"
+X_Unit_Diag_Bit_Help(154) = "Check installation according to the installation \
+instructions of the manufacturer."
+X_Unit_Diag_Bit(155)      = "Surge tube or vent blocked"
+X_Unit_Diag_Bit_Help(155) = "Clean surge tube or venting."
+X_Unit_Diag_Bit(156)      = "Nozzle too long for antenna"
+X_Unit_Diag_Bit_Help(156) = "Check installation according to the installation \
+instructions of the manufacturer."
+X_Unit_Diag_Bit(157)      = "Wall clearance, not vertical"
+X_Unit_Diag_Bit_Help(157) = "Check installation according to the installation \
+instructions of the manufacturer."
+X_Unit_Diag_Bit(158)      = "Corrosion on antenna"
+X_Unit_Diag_Bit_Help(158) = "Replacement is recommended."
+X_Unit_Diag_Bit(159)      = "Attenuation due to fog or dust"
+X_Unit_Diag_Bit_Help(159) = "Check process conditions."
+
+X_Unit_Diag_Bit(160)      = "Antenna signal blocked"
+X_Unit_Diag_Bit_Help(160) = "Check installation according to the installation \
+instructions of the manufacturer."
+X_Unit_Diag_Bit(161)      = "Blocking distance under-run"
+X_Unit_Diag_Bit_Help(161) = "Check process conditions."
+X_Unit_Diag_Bit(162)      = "Echo too strong (overmodulation)"
+X_Unit_Diag_Bit_Help(162) = "Check installation according to the installation \
+instructions of the manufacturer."
+
+EndUnitDiagType
+
+;-------------------------------------------------------------------------
+;
+;max module text length-----------------"
+Module="Not in cyclic data transfer     " 0x00    ;Empty module
+0
+Info_Text="No cyclic data selected for this slot. Function disabled"
+EndModule
+
+Module="Level" 0x42,0x84,0x08,0x05
+1
+EndModule
+
+Module="Distance" 0x42,0x84,0x08,0x05
+2
+EndModule
+
+;----------- Description of the module assignment: ---------------------
+;
+SlotDefinition
+Slot(1) = "<Level>"    1 1
+Slot(2) = "<Distance>" 2 0,2
+EndSlotDefinition
+

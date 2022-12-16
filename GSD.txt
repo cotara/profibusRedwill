@@ -1,0 +1,186 @@
+;==========================================
+; Geraetestammdatei fuer SPS-Remote
+; SEE-Solutions
+; Autor : SEE-Solutions
+; Stand : 30.09.2007
+;         30.09.2007 V1.0
+; =========================================
+;
+#Profibus_DP
+; <Prm-Text-Def-List>
+PrmText=1
+Text(0)="Extended diagnosis enabled"
+Text(1)="Extended diagnosis disabled"
+EndPrmText
+PrmText=1
+Text(0)="Testen an"
+Text(1)="Testen aus"
+EndPrmText
+;
+; <Ext-User-Prm-Data-Def-List> 
+ExtUserPrmData=1 "Диагностика" 
+Bit(7) 0 0-1 
+Prm_Text_Ref=1 
+EndExtUserPrmData 
+; <Unit-Definition-List> 
+GSD_Revision = 1 
+Vendor_Name = "SEE-SOLUTIONS" 
+Model_Name = "SPS-REMOTE" 
+Revision = "1.0" 
+Ident_Number = 0x8070 
+Protocol_Ident = 0 
+Station_Type = 0 
+FMS_supp = 0 
+Hardware_Release = "A2" 
+Software_Release = "B1 " 
+; 
+9.6_supp = 1 
+19.2_supp = 1 
+45.
+93,75_supp = 1 
+187,5_supp = 1 
+500_supp = 0 
+1,5M_supp = 0 
+3M_supp = 0 
+6M_supp = 0 
+12M_supp = 0 
+; 
+MaxTsdr_19.2 = 150 
+; 
+Избыточность = 1 
+Repeater_Ctrl_Sig = 2 
+24V_Pins = 0 
+Реализация_Тип = "SPC3" 
+Bitmap_Device="SI8070_N" 
+Bitmap_SF="SI8070_S" 
+; 
+OrderNumber = "SPS-RMT_V1.0" 
+Freeze_Mode_supp = 1 
+Sync_Mode_supp = 1 
+Auto_Baud_supp = 1 
+; 
+Set_Slave_Add_supp = 0 
+Min_Slave_Interval = 3 
+Modular_Station = 1
+Max_Module = 16 
+Max_Input_Len = 244 
+Max_Output_Len = 244 
+Max_Data_Len = 256 
+; 
+Modul_Offset = 1 
+Fail_Safe = 0 
+Slave_Family = 9 
+Max_Diag_Data_Len = 11 
+User_Prm_Data_Len = 0 
+Max_User_Prm_Data_Len= 4 
+Ext_User_Prm_Data_Const(0) = 0x00,0x00,0x00,0x80 
+Ext_User_Prm_Data_Ref(3) = 1 
+; 
+; Диагностика устройства: 
+Unit_Diag_Bit(0) = "Data Valid 1 = Valid" 
+Unit_Diag_Bit(1) = "зарезервировано" 
+Unit_Diag_Bit(2) = "зарезервировано" 
+Unit_Diag_Bit(3) = "зарезервировано" 
+Unit_Diag_Bit(4) = "зарезервировано" 
+Unit_Diag_Bit( 5 ) = "зарезервировано"
+Unit_Diag_Bit(6) = "зарезервировано" 
+Unit_Diag_Bit(7) = "зарезервировано" 
+Unit_Diag_Bit(8) = "Входы других DP LBS" 
+Unit_Diag_Bit(9) = "Входы других DP 2nd LSB" 
+Unit_Diag_Bit(10) = "Входы других DP 3rd LSB" 
+Unit_Diag_Bit(11) = "Входы другого DP 4th LSB" 
+Unit_Diag_Bit(12) = "Входы другого DP 4th MSB" 
+Unit_Diag_Bit(13) = "Входы другого DP 3rd MSB" 
+Unit_Diag_Bit(14) = "Входы другого DP 2nd MSB" 
+Unit_Diag_Bit(15) = "Входы другого DP MSB" 
+Unit_Diag_Bit(16) = "Выходы другого DP LSB" 
+Unit_Diag_Bit(17) = "Выходы другого DP 2nd LSB" 
+Unit_Diag_Bit(18) = "Выходы другого DP 3rd LSB" 
+Unit_Diag_Bit(19) = "Выходы другого DP 4th LSB"
+Unit_Diag_Bit(20) = "Выходы другого 4-го MSB DP" 
+Unit_Diag_Bit(21) = "Выходы другого 3-го MSB DP" 
+Unit_Diag_Bit(22) = "Выходы другого 2-го MSB DP" 
+Unit_Diag_Bit(23) = "Выходы другого MSB DP" " 
+Unit_Diag_Bit(24) = "зарезервировано" 
+Unit_Diag_Bit(25) = "Запрос очистки данных другой DP" 
+Unit_Diag_Bit(26) = "Запрос разморозить другой DP" 
+Unit_Diag_Bit(27) = "Заморозить запрос другого DP" 
+Unit_Diag_Bit(28) = " Unsync Request other DP" 
+Unit_Diag_Bit(29) = "Sync Request other DP" 
+Unit_Diag_Bit(30) = "reserved" 
+Unit_Diag_Bit(31) = "reserved" 
+; 
+; <список определений модулей>
+Module = "2 байта ввода" 0x11 
+2 
+EndModule 
+; 
+Module = "4 байта ввода" 0x13 
+3 
+EndModule 
+; 
+Module = "Ввод 8 байт" 0x17 
+4 
+EndModule 
+; 
+Module = "Ввод 16 байт" 0x1F 
+5 
+EndModule 
+; 
+Module = "Вывод 1 байт" 0x20 
+6 
+EndModule 
+; 
+Module = "Вывод 2 байта" 0x21 
+7 
+EndModule 
+; 
+Module = "Вывод 4 байта" 0x23 
+8 
+EndModule 
+; 
+Module = "Вывод 8 байт" 0x27 
+9 
+EndModule 
+; 
+Модули = "16 байт вывода"
+; 
+Module = "1 байт согласованного ввода" 0x90 
+11 
+EndModule 
+; 
+Module = "2 байта согласованного ввода" 0x91 
+12 
+EndModule 
+; 
+Module = "4 байта согласованного ввода" 0x93 
+13 
+EndModule 
+; 
+Module = "8 байт согласованного ввода" 0x97 
+14 
+EndModule 
+; 
+Module = "16 байт согласования ввода" 0x9F 
+15 
+EndModule 
+; 
+Module = "1 байт согласованный вывод" 0xA0 
+16 
+EndModule 
+; 
+Module = "2 байта согласованного вывода" 0xA1 
+17 
+EndModule 
+; 
+Модуль = "4 байта вывода согласованы"
+КонечныйМодуль 
+; 
+Module = "8 байт согласованных выходных данных" 0xA7 
+19 
+EndModule 
+; 
+Module = "16 байт выходных данных согласованы" 0xAF 
+20 
+EndModule 
+;
