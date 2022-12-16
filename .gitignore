@@ -11,7 +11,7 @@
 **/settings/*.wspos
 
 # IAR Debug Exe
-**/Debug/Exe/
+**/Exe/
 
 # IAR Debug List
 **/Debug/List
@@ -22,6 +22,7 @@
 **/Obj/*.pbi
 **/Obj/*.pbi.*
 **/Obj/*.o
+**/Obj/*.pbw
 # Log files
 **.log
 
