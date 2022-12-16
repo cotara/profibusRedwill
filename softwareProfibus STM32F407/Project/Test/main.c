@@ -29,19 +29,9 @@ void main(void) {
     LEDInit();
     init_Profibus ();
     InitUSART2();
-    //I2C_EE_Init();
     
     while (1){  
-      //profibus_TX(_buf,10);
-      //delay_1_ms(1000);
+
     }   
 }
 
-
-
-#ifdef  USE_FULL_ASSERT
-void assert_failed(uint8_t* file, uint32_t line){
-    while (1){  
-    }
-}
-#endif
