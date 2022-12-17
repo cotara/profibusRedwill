@@ -82,16 +82,31 @@ void USART2_put_string_2(unsigned char *string, uint32_t l) {
     l--;
   }
 }
+
+void USART2_put_string(unsigned char *string, uint32_t l){
+  TX485EN;
+  memcpy(uart_bufferTX,string+1,l-1);
+  tx_counter=l-1;
+  USART_SendData(USART2, *string);
+  USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
+}
+
 void uart_process(uint8_t byte){
   
   uart_buffer[rx_index] = byte;
  
   // TSYN истек, находимся в режиме ожидания данных. Приём первого байта
-  if (profibus_status == PROFIBUS_WAIT_DATA)   
+  if (profibus_status == PROFIBUS_WAIT_DATA){   
+    GPIO_ResetBits(GPIOD,GPIO_Pin_4); 
     profibus_status = PROFIBUS_GET_DATA;                                        //Меняем статус на ПРОСЕСС ПОЛУЧЕНИЯ ДАННЫХ
+    TIM3->CNT = 0;
+    GPIO_SetBits(GPIOD,GPIO_Pin_2);
+  }
+  
   
   if (profibus_status == PROFIBUS_GET_DATA)  {
     rx_index++;
     if(rx_index==BUFFER_SIZE) rx_index=0;
+    TIM3->CNT = 0;
   }
 }

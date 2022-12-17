@@ -28,7 +28,7 @@ void USART2_IRQHandler(void) {
     if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) {
         USART_ClearITPendingBit(USART2, USART_IT_RXNE);                         //очистка признака прерывания       
         if ((USART2->SR & (USART_FLAG_NE|USART_FLAG_FE|USART_FLAG_PE|USART_FLAG_ORE)) == 0) {              //нет ошибок
-              TIM3->CNT = 0;                                                    // Сброс таймера Profibus
+              //TIM3->CNT = 0;                                                    // Сброс таймера Profibus
               uart_process(USART_ReceiveData(USART2) & 0xFF);
         }                                                                       //Сообщение из USART пришло без ошибок
         else{
@@ -77,18 +77,24 @@ void TIM3_IRQHandler(void) {
             profibus_status = PROFIBUS_WAIT_DATA;
             timers_init((uint32_t)(TIMEOUT_MAX_SDR_TIME+0.5));
             rx_index = 0;
+            GPIO_ResetBits(GPIOD,GPIO_Pin_3);
+            GPIO_SetBits(GPIOD,GPIO_Pin_4);
             break;
             
         case PROFIBUS_WAIT_DATA:                                                  // TSDR истёк
-            break;
+          GPIO_ResetBits(GPIOD,GPIO_Pin_4);  
+          break;
             
         case PROFIBUS_GET_DATA:                                                   // TSDR истёк, а данные есть
           profibus_status = PROFIBUS_WAIT_SYN;
           timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME+0.5));                      //Время синхронизации пошло       
-          TIM_Cmd(TIM3,ENABLE);
+          GPIO_ResetBits(GPIOD,GPIO_Pin_2);
           GPIO_SetBits(GPIOD,GPIO_Pin_0);
           profibus_RX();
           GPIO_ResetBits(GPIOD,GPIO_Pin_0);
+          GPIO_SetBits(GPIOD,GPIO_Pin_3);
+          TIM_Cmd(TIM3,ENABLE);
+          rx_index = 0;
           break;
             
         case PROFIBUS_SEND_DATA:                                                  // Время ожидания отправки истекло, переводим на получение

@@ -24,7 +24,7 @@
 //#define MASTER_ADD            2     // SPS Adresse
 #define SAP_OFFSET            128   // Service Access Point Adress Offset
 #define BROADCAST_ADD         127
-#define DEFAULT_ADD           15   // Auslieferungsadresse
+#define DEFAULT_ADD           3   // Auslieferungsadresse
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,10 +181,9 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#define TIMEOUT_MAX_SYN_TIME  33 * DELAY_TBIT // 33 TBit = TSYN                 //33 длины бита надо ждать
-#define TIMEOUT_MAX_RX_TIME   15 * DELAY_TBIT
-#define TIMEOUT_MAX_TX_TIME   20 * DELAY_TBIT                                   //
-#define TIMEOUT_MAX_SDR_TIME  12 * DELAY_TBIT // 15 Tbit = TSDR                 //Принимаем данные
+#define TIMEOUT_MAX_SYN_TIME  15 * DELAY_TBIT // 33 TBit = TSYN                 //33 длины бита надо ждать
+#define TIMEOUT_MAX_TX_TIME   15 * DELAY_TBIT                                   //
+#define TIMEOUT_MAX_SDR_TIME  16 * DELAY_TBIT // 15 Tbit = TSDR                 //Принимаем данные
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

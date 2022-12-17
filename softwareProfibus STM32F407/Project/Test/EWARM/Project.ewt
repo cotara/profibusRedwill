@@ -1188,6 +1188,9 @@
     <group>
         <name>CMSIS</name>
         <file>
+            <name>$PROJ_DIR$\..\..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\system_stm32f4xx.c</name>
         </file>
     </group>

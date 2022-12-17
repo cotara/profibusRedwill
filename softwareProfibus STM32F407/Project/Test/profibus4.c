@@ -61,8 +61,9 @@ uint8_t slave_addr;
 uint8_t master_addr;
 uint8_t group;
 uint8_t inputSize,outputSize;
-uint8_t data_out_register[OUTPUT_DATA_SIZE]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+uint8_t data_out_register[OUTPUT_DATA_SIZE]={0xa4,0x70,0x45,0x41,5,6,7,8,9,10,11,12,13,14,15,16};
 uint8_t data_in_register [INPUT_DATA_SIZE]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+uint32_t errorCount = 0;
 
 #if (USER_PARA_SIZE > 0)
 uint8_t User_Para[USER_PARA_SIZE];
@@ -202,6 +203,7 @@ void profibus_RX (void)
         break;
         
     default:
+        errorCount++;
         break;
   } 
 
@@ -574,7 +576,7 @@ void profibus_TX (uint8_t *data, uint8_t length)
 
     TIM_Cmd(TIM3,ENABLE);
     GPIO_SetBits(GPIOD,GPIO_Pin_1);
-    USART2_put_string_2(data,length);                                           //Загружаем строку в буфер на отправку
+    USART2_put_string(data,length);                                           //Загружаем строку в буфер на отправку
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
