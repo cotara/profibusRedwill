@@ -92,21 +92,23 @@ void USART2_put_string(unsigned char *string, uint32_t l){
 }
 
 void uart_process(uint8_t byte){
-  
+  TIM_Cmd(TIM3,DISABLE);
   uart_buffer[rx_index] = byte;
  
   // TSYN истек, находимся в режиме ожидания данных. Приём первого байта
   if (profibus_status == PROFIBUS_WAIT_DATA){   
+    TIM3->CNT = 0;
     GPIO_ResetBits(GPIOD,GPIO_Pin_4); 
     profibus_status = PROFIBUS_GET_DATA;                                        //Меняем статус на ПРОСЕСС ПОЛУЧЕНИЯ ДАННЫХ
-    TIM3->CNT = 0;
+    
     GPIO_SetBits(GPIOD,GPIO_Pin_2);
   }
   
   
   if (profibus_status == PROFIBUS_GET_DATA)  {
+    TIM3->CNT = 0;
     rx_index++;
     if(rx_index==BUFFER_SIZE) rx_index=0;
-    TIM3->CNT = 0;
   }
+  TIM_Cmd(TIM3,ENABLE); 
 }

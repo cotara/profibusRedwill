@@ -478,6 +478,8 @@ void profibus_RX (void)
 //        #endif
       }
     }
+    else
+      errorCount++;
 
   } 
 

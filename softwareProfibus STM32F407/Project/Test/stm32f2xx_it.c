@@ -33,11 +33,12 @@ void USART2_IRQHandler(void) {
         }                                                                       //Сообщение из USART пришло без ошибок
         else{
            USART_ReceiveData(USART2);
+           TIM3->CNT = 0; 
         }
     }
         
-    if (USART_GetITStatus(USART2, USART_IT_ORE_RX) == SET) {                    //прерывание по переполнению буфера
-        USART_ReceiveData(USART2);                                              //в идеале пишем здесь обработчик переполнения буфера, но мы просто сбрасываем этот флаг прерывания чтением из регистра данных.
+    if (USART_GetITStatus(USART2, USART_IT_ORE_RX) == SET) {                     //прерывание по переполнению ошибке четности
+      USART_ReceiveData(USART2);                                              //в идеале пишем здесь обработчик переполнения буфера, но мы просто сбрасываем этот флаг прерывания чтением из регистра данных.
     }
     
     
@@ -82,7 +83,8 @@ void TIM3_IRQHandler(void) {
             break;
             
         case PROFIBUS_WAIT_DATA:                                                  // TSDR истёк
-          GPIO_ResetBits(GPIOD,GPIO_Pin_4);  
+          GPIO_ResetBits(GPIOD,GPIO_Pin_4);
+          GPIO_SetBits(GPIOD,GPIO_Pin_4);
           break;
             
         case PROFIBUS_GET_DATA:                                                   // TSDR истёк, а данные есть
