@@ -26,17 +26,20 @@ int InitUSART2() {
   
   GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART2); //PC10 to TX USART2
   GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART2); //PC11 to RX USART2
+    
+  USART_OneBitMethodCmd(USART2,ENABLE);
+  USART_OverSampling8Cmd(USART2,ENABLE);
   
   USART_InitTypeDef USART_InitStructureUSART;  
-  USART_InitStructureUSART.USART_BaudRate = 1500000;
+  USART_InitStructureUSART.USART_BaudRate = 3000000;
   USART_InitStructureUSART.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructureUSART.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_InitStructureUSART.USART_Parity = USART_Parity_Even;
   USART_InitStructureUSART.USART_StopBits = USART_StopBits_1;
   USART_InitStructureUSART.USART_WordLength = USART_WordLength_9b;
   USART_Init(USART2, &USART_InitStructureUSART);
-  
 
+  
   /* Configure PD4 as rs485 tx select           */
   GPIO_InitTypeDef  GPIO_InitStructure;
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_7;
@@ -92,23 +95,26 @@ void USART2_put_string(unsigned char *string, uint32_t l){
 }
 
 void uart_process(uint8_t byte){
-  TIM_Cmd(TIM3,DISABLE);
-  uart_buffer[rx_index] = byte;
  
+  uart_buffer[rx_index] = byte;
+  TIM3->CNT = 0;
+  GPIOD->ODR ^= GPIO_Pin_15;
   // TSYN истек, находимся в режиме ожидания данных. Приём первого байта
   if (profibus_status == PROFIBUS_WAIT_DATA){   
-    TIM3->CNT = 0;
-    GPIO_ResetBits(GPIOD,GPIO_Pin_4); 
     profibus_status = PROFIBUS_GET_DATA;                                        //Меняем статус на ПРОСЕСС ПОЛУЧЕНИЯ ДАННЫХ
     
     GPIO_SetBits(GPIOD,GPIO_Pin_2);
+    GPIO_ResetBits(GPIOD,GPIO_Pin_0);
+    GPIO_ResetBits(GPIOD,GPIO_Pin_1);
+    GPIO_ResetBits(GPIOD,GPIO_Pin_4); 
   }
   
-  
   if (profibus_status == PROFIBUS_GET_DATA)  {
-    TIM3->CNT = 0;
     rx_index++;
     if(rx_index==BUFFER_SIZE) rx_index=0;
   }
-  TIM_Cmd(TIM3,ENABLE); 
+
+}
+void uart_error(){
+  spiSendByte(rx_index);
 }

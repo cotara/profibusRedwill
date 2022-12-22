@@ -6,7 +6,7 @@
 #include "LED_user.h"
 
 #include "profibus4.h"
-
+#include "spi_user.h"
 
 __IO uint32_t TimeOut = 0x00;
 
@@ -25,14 +25,14 @@ void main(void) {
     RCC_GetClocksFreq(&RCC_Clocks);
     SysTick_Config(SystemCoreClock/1000);
     
-    //timers_init(1000);
     LEDInit();
-    //timers_init((uint32_t)(2));
     init_Profibus ();
     InitUSART2();
+    SPI_Config();
     
     while (1){  
-
+//        spiSendByte(0x1);
+//        delay_1_ms(100);
     }   
 }
 

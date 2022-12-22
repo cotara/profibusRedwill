@@ -24,7 +24,7 @@ Slave_Family        = 9
 187.5_supp          = 1
 500_supp            = 1
 1.5M_supp           = 1
-3M_supp             = 0
+3M_supp             = 1
 6M_supp             = 0
 12M_supp            = 0
 

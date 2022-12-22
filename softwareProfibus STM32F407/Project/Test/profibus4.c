@@ -48,7 +48,7 @@ EXT_DIAG_) были переданы пустые диагностические
 устанавливается соответствующий флаг (CFG_FAULT_). в диагностике Весь раздел «Проверить запрос конфигурации» был переработан в этом отношении.
 */
 #include "profibus4.h"
-
+#include "spi_user.h"
 
 extern uint8_t uart_buffer[BUFFER_SIZE];
 extern uint16_t rx_index, tx_index,tx_counter;
@@ -118,7 +118,7 @@ void init_Profibus (void)
   #endif
   
   // Инициализация таймера
-  timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME+0.5));
+  timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME));
   TIM_Cmd(TIM3,ENABLE); 
 }
 
@@ -156,14 +156,14 @@ void profibus_RX (void)
         function_code   = uart_buffer[3];
         FCS_data        = uart_buffer[4];
 
-        if (addmatch(destination_add)       == 0) break;
-        if (checksum(&uart_buffer[1], 3) != FCS_data) break;
+        if (addmatch(destination_add)       == 0) {spiSendByte(DEST_ERROR);break;}
+        if (checksum(&uart_buffer[1], 3) != FCS_data) {spiSendByte(CRC_ERROR);break;}
 
         process_data = 1;
         break;
 
     case SD2:                                                                   // Телеграмма с переменной длиной данных
-        if (rx_index != uart_buffer[1] + 6) break;
+        if (rx_index != uart_buffer[1] + 6) {spiSendByte(rx_index);break;}
 
         PDU_size        = uart_buffer[1];                                       // DestA+SourseA+FuCode+Полезные данные
         destination_add = uart_buffer[4];
@@ -171,8 +171,8 @@ void profibus_RX (void)
         function_code   = uart_buffer[6];
         FCS_data        = uart_buffer[PDU_size + 4];
         
-        if (addmatch(destination_add)              == 0) break;
-        if (checksum(&uart_buffer[4], PDU_size) != FCS_data) break;
+        if (addmatch(destination_add)              == 0) {spiSendByte(DEST_ERROR);break;}
+        if (checksum(&uart_buffer[4], PDU_size) != FCS_data) {spiSendByte(CRC_ERROR);break;}
 
         process_data = 1;
         break;
@@ -186,8 +186,8 @@ void profibus_RX (void)
         function_code   = uart_buffer[3];
         FCS_data        = uart_buffer[9];
 
-        if (addmatch(destination_add)       == 0) break;
-        if (checksum(&uart_buffer[1], 8) != FCS_data) break;
+        if (addmatch(destination_add)       == 0) {spiSendByte(DEST_ERROR);break;}
+        if (checksum(&uart_buffer[1], 8) != FCS_data) {spiSendByte(CRC_ERROR);break;}
 
         process_data = 1;
         break;
@@ -198,11 +198,12 @@ void profibus_RX (void)
         destination_add = uart_buffer[1];
         source_add      = uart_buffer[2];
       
-        if (addmatch(destination_add)       == 0) break;
+        if (addmatch(destination_add)       == 0) {spiSendByte(DEST_ERROR);break;}
         
         break;
         
     default:
+        spiSendByte(telegramm_type);
         errorCount++;
         break;
   } 
@@ -210,7 +211,6 @@ void profibus_RX (void)
   if (process_data == 1)                                                        // Продолджаем только если данные в порядке
   {     
     master_addr = source_add;                                                   // Master Adress это адрес отправителя
-    
     if ((destination_add & 0x80) && (source_add & 0x80))                        // Service Access Point (SAP) обнаружен?
     {
       DSAP_data = uart_buffer[7];
@@ -396,11 +396,11 @@ void profibus_RX (void)
                           cnt += 2;                                             // У нас уже есть второй и третий байты
                           
                           break;
-  
                     }
                     break;
   
                 default:
+                    spiSendByte(UNKNOWN_MODULE); 
                     break;
   
               } // Switch End
@@ -433,7 +433,8 @@ void profibus_RX (void)
             break;
 
         default:                                                                // Неизвестный SAP
-            break;
+          spiSendByte(UNKNOWN_SAP);  
+          break;
 
       } // Switch DSAP_data End
 
@@ -479,6 +480,7 @@ void profibus_RX (void)
       }
     }
     else
+      spiSendByte(destination_add);
       errorCount++;
 
   } 
@@ -574,10 +576,13 @@ void profibus_TX (uint8_t *data, uint8_t length)
 {
     profibus_status = PROFIBUS_SEND_DATA;
     
-    timers_init((uint32_t)(TIMEOUT_MAX_TX_TIME+0.5));                           // Инициализация таймера
+    timers_init((uint32_t)(TIMEOUT_MAX_TX_TIME));                           // Инициализация таймера
 
     TIM_Cmd(TIM3,ENABLE);
-    GPIO_SetBits(GPIOD,GPIO_Pin_1);
+    GPIO_SetBits(GPIOD,GPIO_Pin_4);
+    GPIO_ResetBits(GPIOD,GPIO_Pin_0);
+    GPIO_ResetBits(GPIOD,GPIO_Pin_1);
+    GPIO_ResetBits(GPIOD,GPIO_Pin_2); 
     USART2_put_string(data,length);                                           //Загружаем строку в буфер на отправку
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
