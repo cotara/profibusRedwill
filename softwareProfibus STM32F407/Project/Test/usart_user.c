@@ -6,7 +6,41 @@ uint16_t rx_index=0, tx_index = 0,tx_counter=0;
 uint8_t uart_bufferTX[BUFFER_SIZE];
 extern uint8_t profibus_status;
 
-int InitUSART2() { 
+
+
+void EXTILine_Config(void)
+{
+  EXTI_InitTypeDef   EXTI_InitStructure;
+  GPIO_InitTypeDef   GPIO_InitStructure;
+  NVIC_InitTypeDef   NVIC_InitStructure;
+
+  /* Enable GPIOA clock */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+  /* Enable SYSCFG clock */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+  
+  /* Configure PA0 pin as input floating */
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+  GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+  /* Connect EXTI Line0 to PA0 pin */
+  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOD, EXTI_PinSource6);
+
+  /* Configure EXTI Line0 */
+  EXTI_InitStructure.EXTI_Line = EXTI_Line6;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;  
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+  
+  NVIC_SetPriority (EXTI9_5_IRQn, 0);
+  NVIC_EnableIRQ (EXTI9_5_IRQn);
+  
+}
+
+int InitUSART2(uint32_t baud) { 
     
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE); 
@@ -31,7 +65,7 @@ int InitUSART2() {
   USART_OverSampling8Cmd(USART2,ENABLE);
   
   USART_InitTypeDef USART_InitStructureUSART;  
-  USART_InitStructureUSART.USART_BaudRate = 3000000;
+  USART_InitStructureUSART.USART_BaudRate = baudSpeed[baud];
   USART_InitStructureUSART.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructureUSART.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_InitStructureUSART.USART_Parity = USART_Parity_Even;
@@ -53,9 +87,10 @@ int InitUSART2() {
   NVIC_SetPriority (USART2_IRQn, 0);
   NVIC_EnableIRQ (USART2_IRQn);
 
+    
   USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
   USART_Cmd(USART2, ENABLE);    
-
+  
   return 0; 
    
 }
@@ -97,6 +132,7 @@ void USART2_put_string(unsigned char *string, uint32_t l){
 void uart_process(uint8_t byte){
  
   uart_buffer[rx_index] = byte;
+
   TIM3->CNT = 0;
   GPIOD->ODR ^= GPIO_Pin_15;
   // TSYN истек, находимся в режиме ожидания данных. Приём первого байта

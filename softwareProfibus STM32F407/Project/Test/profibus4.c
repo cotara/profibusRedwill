@@ -64,6 +64,7 @@ uint8_t inputSize,outputSize;
 uint8_t data_out_register[OUTPUT_DATA_SIZE]={0xa4,0x70,0x45,0x41,5,6,7,8,9,10,11,12,13,14,15,16};
 uint8_t data_in_register [INPUT_DATA_SIZE]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 uint32_t errorCount = 0;
+uint32_t tBit=1250;
 
 #if (USER_PARA_SIZE > 0)
 uint8_t User_Para[USER_PARA_SIZE];
@@ -80,13 +81,15 @@ uint8_t User_Para_size;
 uint8_t Module_cnt;
 uint8_t Module_Data_size[MODULE_CNT][2];                                        // [][0] = количество входов, [][1] = количество выходов
 uint8_t Vendor_Data_size;                                                       // Количество прочитанных байтов производителя
-
+extern uint8_t buadOK;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /*!
  * \brief Profibus инициализация таймеров и переменных
  */
-void init_Profibus (void)
+void init_Profibus (uint32_t baud)
 {
+
+    
   uint8_t cnt;
   
   profibus_status = PROFIBUS_WAIT_SYN;                                          // Инициализация переменных
@@ -95,6 +98,34 @@ void init_Profibus (void)
   Vendor_Data_size = 0;
   group = 0;
   
+  switch(baud){
+  case 0:
+    tBit=DELAY_TBIT9_6;
+    break;
+  case 1:
+    tBit=DELAY_TBIT19_2;
+    break;
+  case 2:
+    tBit=DELAY_TBIT45_45;
+    break;
+  case 3:
+    tBit=DELAY_TBIT93_75;
+    break;
+  case 4:
+    tBit=DELAY_TBIT187_5;
+    break;
+  case 5:
+    tBit=DELAY_TBIT500;
+    break;
+  case 6:
+    tBit=DELAY_TBIT1500;
+    break;
+  case 7:
+    tBit=DELAY_TBIT3000;
+    break;
+  }
+    
+    
   //slave_addr = get_Address();                                                 // Чтение slave-адреса из EEPROM
   if((slave_addr == 0) || (slave_addr > 126))                                   // Не разрешать недействительные адреса
     slave_addr = DEFAULT_ADD;
@@ -118,7 +149,7 @@ void init_Profibus (void)
   #endif
   
   // Инициализация таймера
-  timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME));
+  timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME * tBit));
   TIM_Cmd(TIM3,ENABLE); 
 }
 
@@ -156,7 +187,7 @@ void profibus_RX (void)
         function_code   = uart_buffer[3];
         FCS_data        = uart_buffer[4];
 
-        if (addmatch(destination_add)       == 0) {spiSendByte(DEST_ERROR);break;}
+        if (addmatch(destination_add)       == 0) {/*spiSendByte(DEST_ERROR);*/break;}
         if (checksum(&uart_buffer[1], 3) != FCS_data) {spiSendByte(CRC_ERROR);break;}
 
         process_data = 1;
@@ -179,7 +210,7 @@ void profibus_RX (void)
 
     case SD3:                                                                   // Телеграмма с 5 байтами данных, максимум 11 байт
         if (rx_index != 11) break;
-
+        
         PDU_size        = 8;                                                    // DestA+SourseA+FuCode+Полезные данные
         destination_add = uart_buffer[1];
         source_add      = uart_buffer[2];
@@ -194,12 +225,7 @@ void profibus_RX (void)
 
     case SD4:                                                                   // Токен с 3 байтами данных
         if (rx_index != 3) break;
-
-        destination_add = uart_buffer[1];
-        source_add      = uart_buffer[2];
-      
-        if (addmatch(destination_add)       == 0) {spiSendByte(DEST_ERROR);break;}
-        
+        buadOK=1;       
         break;
         
     default:
@@ -479,9 +505,10 @@ void profibus_RX (void)
 //        #endif
       }
     }
-    else
+    else{
       spiSendByte(destination_add);
       errorCount++;
+    }
 
   } 
 
@@ -576,7 +603,7 @@ void profibus_TX (uint8_t *data, uint8_t length)
 {
     profibus_status = PROFIBUS_SEND_DATA;
     
-    timers_init((uint32_t)(TIMEOUT_MAX_TX_TIME));                           // Инициализация таймера
+    timers_init((uint32_t)(TIMEOUT_MAX_TX_TIME * tBit));                           // Инициализация таймера
 
     TIM_Cmd(TIM3,ENABLE);
     GPIO_SetBits(GPIOD,GPIO_Pin_4);

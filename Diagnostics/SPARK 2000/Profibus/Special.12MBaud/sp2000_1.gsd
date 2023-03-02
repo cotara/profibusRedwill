@@ -1,0 +1,93 @@
+; GSD-File for SIKORA SPARK2000 SPARK TESTER UL
+; ================================================================
+; compact station, 3 byte IN / 1 byte OUT
+; Freeze_Mode_supp, Sync_Mode_supp, Auto_Baud_supp, 1.5 MBaud
+;
+;
+; Copyright (C) SIKORA AG 2006  All Rights Reserved.
+; questions reply to:
+;                       SIKORA AG
+;                       Bruchweide 2
+;                       28307 Bremen
+;                       GERMANY
+;
+;                       Phone:    (++49)(0)421-48900-0
+;                       Fax:      (++49)(0)421-48900-90
+;                       eMail:    service@sikora.net
+;                       Internet: http://www.sikora.net
+; ================================================================
+;
+; History
+; ================================================================
+; 23.04.1999            Created
+;
+; 29.09.2000            Add spaces for compatibility to SST tools
+;                       "Step7 Syntax problem", GSD-Revision=1
+;                       FMS_supp=0, Slave_Family=0, Modul_Offset=0
+;
+; 27.10.2006            Company name change
+;                       GSD-Rev. 2
+; ================================================================
+;
+#Profibus_DP                              ; Identifier for a DP GSD file
+;
+; <UNIT-Definition-List> ----------------------
+;
+GSD_Revision = 2
+Vendor_Name = "SIKORA AG"
+Model_Name = "Spark2000-DP.1"
+Revision = "V 1.00"               
+Ident_Number = 0xA5A5                
+Protocol_Ident = 0                   	  ; PROFIBUS DP
+Station_Type = 0                     	  ; DP Slave
+FMS_supp = 0
+Hardware_Release = "V 1.0"               
+Software_Release = "-----"
+;
+; supported Baudrate
+9.6_supp = 1
+19.2_supp = 1                    
+93.75_supp = 1
+187.5_supp = 1
+500_supp = 1
+1.5M_supp = 1
+3M_supp = 1
+6M_supp = 1
+12M_supp = 1			       	  ; maximum 12 MBaud support
+;
+; Maximum TSDR
+MaxTsdr_9.6 = 11
+MaxTsdr_19.2 = 11
+MaxTsdr_93.75 = 11
+MaxTsdr_187.5 = 11
+MaxTsdr_500 = 11  
+MaxTsdr_1.5M = 11
+MaxTsdr_3M = 11
+MaxTsdr_6M = 25
+MaxTsdr_12M = 50
+;
+Redundancy = 0                              ; support redundancy
+Repeater_Ctrl_Sig = 2
+Implementation_Type = "LSPM2"
+;
+; DP Slave Properties
+Freeze_Mode_supp = 1
+Sync_Mode_supp = 1
+Auto_Baud_supp = 1
+Set_Slave_Add_supp = 0
+Min_Slave_Intervall = 1
+Max_Diag_Data_Len = 13
+Slave_Family = 0
+User_Prm_Data_Len = 0x05
+User_Prm_Data = 0x00,0x00,0x00,0x00,0x00
+;
+Modular_Station = 1
+Max_Module = 1
+Max_Input_Len = 3
+Max_Output_Len = 1
+Max_Data_len = 4
+;
+; Product description
+;
+Module = "1 Byte OUT, 3 Byte IN"0x20,0x12
+EndModule

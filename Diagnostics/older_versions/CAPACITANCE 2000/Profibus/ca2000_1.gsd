@@ -1,0 +1,89 @@
+; GSD-File for SIKORA CAP2000 capacitance measuring head
+; ================================================================
+; compact station, 6 byte IN / 5 byte OUT
+; Freeze_Mode_supp, Sync_Mode_supp, Auto_Baud_supp, 1.5 MBaud
+;
+; PRELIMINARY VERSION
+;
+; Copyright (C) SIKORA GmbH 1998  All Rights Reserved.
+; questions reply to:
+;
+;                       SIKORA Industrieelektronik GmbH
+;                       Bruchweide 2
+;                       28307 Bremen
+;                       GERMANY
+;
+;                       Phone:    (++49)(0)421-48900-0
+;                       Fax:      (++49)(0)421-48900-90
+;                       eMail:    service@sikora.net
+;                       Internet: http://www.sikora.net
+; ================================================================
+;
+; History
+; ================================================================
+; 29.09.2000            Created, allow all baudrates, based on
+;                       standard GSD file
+; 22.01.2002            Remove Baudrate higher 1.5MBaud because of
+;                       hardware limit by ESD-safe RS485 driver
+; ================================================================
+;
+#Profibus_DP                                   ; Identifier for a DP GSD file
+;
+; <UNIT-Definition-List> ----------------------
+;
+GSD_Revision = 1
+Vendor_Name = "SIKORA"
+Model_Name = "CAP2000-DP.1"
+Revision = "V 1.0"               
+Ident_Number = 0x2906                
+Protocol_Ident = 0                   		; PROFIBUS DP
+Station_Type = 0                     		; DP Slave
+FMS_supp = 0                                    ; FMS is not supported
+Hardware_Release = "V 1.0"               
+Software_Release = "V 1.0"
+;
+; supported Baudrate
+9.6_supp = 1                    
+19.2_supp = 1
+45.45_supp = 1
+93.75_supp = 1
+187.5_supp = 1
+500_supp = 1
+1.5M_supp = 1                             ; maximum 1.5 MBaud support
+3M_supp = 0
+6M_supp = 0
+12M_supp = 0
+; Default TSDR
+MaxTsdr_9.6 = 60
+MaxTsdr_19.2 = 60 
+MaxTsdr_45.45 = 60  
+MaxTsdr_93.75 = 60  
+MaxTsdr_187.5 = 60
+MaxTsdr_500 = 100  
+MaxTsdr_1.5M = 150
+MaxTsdr_3M = 250
+MaxTsdr_6M = 450
+MaxTsdr_12M = 800
+Implementation_Type = "SPC3"
+;
+; DP Slave Properties
+Freeze_Mode_supp = 1
+Sync_Mode_supp = 1
+Auto_Baud_supp = 1
+Set_Slave_Add_supp = 0
+User_Prm_Data_Len = 0
+Max_Diag_Data_Len = 6
+Min_Slave_Intervall = 1
+Slave_Family = 0
+;
+Modular_Station = 1
+Modul_Offset = 0
+Max_Module = 1
+Max_Input_Len = 6
+Max_Output_Len = 5
+Max_Data_len = 11
+;
+; Product description
+;
+Module = "6 Byte IN, 5 Byte OUT"0x15,0x24
+EndModule

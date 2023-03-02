@@ -6,7 +6,6 @@ volatile uint32_t TimingDelay_1mcs,TimingDelay_1ms;
 
 void timers_init(uint32_t period2)
 {
-
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   RCC_ClocksTypeDef RCC_ClocksStatus;
    TIM_DeInit(TIM3);
@@ -14,10 +13,9 @@ void timers_init(uint32_t period2)
 //  /***********************************************************************
 //                                TIMER2              
 //  ***********************************************************************/
-  RCC_GetClocksFreq(&RCC_ClocksStatus);
   TIM_InternalClockConfig(TIM3);
   //TIM_TimeBaseStructure.TIM_Prescaler = 168-1;                                    //Таймер настроен на 500 кГц
-  TIM_TimeBaseStructure.TIM_Prescaler = 7-1;                                   //Таймер настроен на 12 МГц
+  TIM_TimeBaseStructure.TIM_Prescaler = 7-1;                                    //Таймер настроен на 12 МГц
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_Period = period2-1;                                    //1мс
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
@@ -30,32 +28,34 @@ void timers_init(uint32_t period2)
   NVIC_SetPriority (TIM3_IRQn, 1);
   NVIC_EnableIRQ (TIM3_IRQn);
 
-  TIM_Cmd(TIM3,ENABLE);
-  
+  TIM_Cmd(TIM3,ENABLE); 
+
+}
+void timer5_init(void){
  /***********************************************************************
                                 TIMER5              
   ***********************************************************************/
-// 
-//  RCC_GetClocksFreq(&RCC_ClocksStatus);
-//  TIM_InternalClockConfig(TIM5);
-//  
-//  TIM_TimeBaseStructure.TIM_Prescaler = 56-1;                                   //Смотреть осцилом
-//  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-//  TIM_TimeBaseStructure.TIM_Period = 1;                                         //1 мкс
-//  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-//  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
-//  TIM_TimeBaseInit(TIM5,&TIM_TimeBaseStructure);
-//  
-// 
-//  TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
-//  TIM_ClearFlag(TIM5,TIM_IT_Update);
-//   
-//  NVIC_SetPriority (TIM5_IRQn, 0);
-//  NVIC_EnableIRQ (TIM5_IRQn);
-//  
-//  TIM_Cmd(TIM5,ENABLE);
-}
+  TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5,ENABLE);
 
+  TIM_InternalClockConfig(TIM5);
+  
+  TIM_TimeBaseStructure.TIM_Prescaler = 7;                                    //Смотреть осцилом
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_Period = 4;                                         //6Мгц
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM5,&TIM_TimeBaseStructure);
+  
+  TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
+  TIM_ClearFlag(TIM5,TIM_IT_Update);
+   
+  NVIC_SetPriority (TIM5_IRQn, 0);
+  NVIC_EnableIRQ (TIM5_IRQn);
+  
+  TIM_Cmd(TIM5,ENABLE);
+}
 
 void update_Time(RTC_TimeTypeDef *time, unsigned char* RTC_time)
 { 

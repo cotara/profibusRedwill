@@ -8,4 +8,5 @@ void TimingDelay_1ms_Decrement(void);
 void delay_1_ms(volatile uint32_t nTime);
 void delay_1_mcs(volatile uint32_t nTime);
 void TimingDelay_1mcs_Decrement(void);
+void timer5_init(void);
 

@@ -9,7 +9,7 @@
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </StLinkDriver>
     <DebugChecksum>
-        <Checksum>2710483344</Checksum>
+        <Checksum>668832016</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -67,13 +67,12 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\main.c}.40.1" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\main.c}.40.1" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\stm32f2xx_it.c}.143.1" 0 0 1 "" 0 "" 0</Bp2>
+        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\main.c}.57.1" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\main.c}.57.1" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\stm32f2xx_it.c}.160.1" 0 0 1 "" 0 "" 0</Bp2>
         <Bp3>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\system_stm32f4xx.c}.315.1" 0 0 1 "" 0 "" 0</Bp3>
         <Bp4>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\spi_user.c}.45.3" 0 0 1 "" 0 "" 0</Bp4>
-        <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\main.c}.30.5" 0 0 1 "" 0 "" 0</Bp5>
-        <Count>6</Count>
+        <Count>5</Count>
     </Breakpoints2>
     <Aliases>
         <A0>_ "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\CMSIS\Core\Include\core_cm4.h" ""</A0>

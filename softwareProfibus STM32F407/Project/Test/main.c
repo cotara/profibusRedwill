@@ -13,7 +13,8 @@ __IO uint32_t TimeOut = 0x00;
 RCC_ClocksTypeDef RCC_Clocks;
 extern  uint8_t uart_buffer[BUFFER_SIZE];
 extern  uint16_t rx_index, tx_index,tx_counter;
-
+uint8_t baudNum=-1;
+uint8_t buadOK=0;
 /********************************************************
 * MAIN
 ********************************************************/
@@ -26,8 +27,24 @@ void main(void) {
     SysTick_Config(SystemCoreClock/1000);
     
     LEDInit();
-    init_Profibus ();
-    InitUSART2();
+    
+    //delay_1_ms(100);
+    
+//    EXTILine_Config();
+//    timer5_init();
+    
+    
+    while(!buadOK){
+      baudNum++;
+      if(baudNum>7) baudNum=0;
+      InitUSART2(baudNum);
+      init_Profibus (baudNum);
+      delay_1_ms(100);
+      
+    }
+
+  
+    
     SPI_Config();
     
     while (1){  

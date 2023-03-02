@@ -8,9 +8,12 @@
 extern  uint8_t uart_buffer[BUFFER_SIZE], uart_bufferTX[BUFFER_SIZE];;
 extern  uint16_t rx_index, tx_index,tx_counter;
 extern uint8_t profibus_status;
+extern uint32_t tBit;
 uint16_t txrd_index=0;
 uint32_t mcs=0;
 uint32_t counter=0;
+uint32_t tick=0;
+uint32_t speed=1000000;
 void HardFault_Handler(void) {
     /* Go to infinite loop when Hard Fault exception occurs */
     while (1) {
@@ -77,7 +80,7 @@ void TIM3_IRQHandler(void) {
       switch (profibus_status) {
         case PROFIBUS_WAIT_SYN: 
             profibus_status = PROFIBUS_WAIT_DATA;
-            timers_init((uint32_t)(TIMEOUT_MAX_SDR_TIME));
+            timers_init((uint32_t)(TIMEOUT_MAX_SDR_TIME * tBit));
             rx_index = 0;
             GPIO_SetBits(GPIOD,GPIO_Pin_1);
             GPIO_ResetBits(GPIOD,GPIO_Pin_0);
@@ -94,7 +97,7 @@ void TIM3_IRQHandler(void) {
             
         case PROFIBUS_GET_DATA:                                                   // TSDR истёк, а данные есть
           profibus_status = PROFIBUS_WAIT_SYN;
-          timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME));                      //Время синхронизации пошло    
+          timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME * tBit));                      //Время синхронизации пошло    
           GPIO_SetBits(GPIOD,GPIO_Pin_0);
           GPIO_ResetBits(GPIOD,GPIO_Pin_1);
           GPIO_ResetBits(GPIOD,GPIO_Pin_2);
@@ -111,7 +114,7 @@ void TIM3_IRQHandler(void) {
             
         case PROFIBUS_SEND_DATA:                                                  // Время ожидания отправки истекло, переводим на получение
           profibus_status = PROFIBUS_WAIT_SYN;         
-          timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME));                      //Время синхронизации пошло   
+          timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME * tBit));                      //Время синхронизации пошло   
           GPIO_SetBits(GPIOD,GPIO_Pin_0);
           GPIO_ResetBits(GPIOD,GPIO_Pin_1);
           GPIO_ResetBits(GPIOD,GPIO_Pin_2);
@@ -131,11 +134,25 @@ void TIM3_IRQHandler(void) {
   //    TIM2->CNT = 0;
     }
 }
+
 //Таймер для задержек
 void TIM5_IRQHandler(void) {
-  // Clear TIM5 counter
-   TIM_ClearFlag(TIM5, TIM_IT_Update);  
-   TimingDelay_1mcs_Decrement();    
+  if (TIM_GetITStatus(TIM5, TIM_IT_Update) != RESET){
+    tick++; 
+    TIM_ClearFlag(TIM5, TIM_IT_Update); 
+   //GPIOD->ODR ^= GPIO_Pin_4;
+  }
 }
 
+void EXTI9_5_IRQHandler(void)
+{
+  if(EXTI_GetITStatus(EXTI_Line6) != RESET)
+  {
+    if(tick<speed)
+      speed=tick;
+    tick=0;
+    
+    EXTI_ClearITPendingBit(EXTI_Line6);
+  }
+}
 /******************* (C) COPYRIGHT 2010 STMicroelectronics *****END OF FILE****/

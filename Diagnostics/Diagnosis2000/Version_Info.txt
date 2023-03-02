@@ -1,0 +1,29 @@
+SIKORA Diagnosis2000
+V4-11 (September 17, 2009)
+
+Diagnostic and Analytic Software for the following SIKORA devices:
+
+X-RAY 2000
+LASER 2000
+LUMP 2000
+CENTERVIEW 2000
+CENTERVIEW 8000
+CAPACITANCE 2000
+CV-INTUBE 6000
+ULTRATEMP 6000
+
+Run Diagnosis.exe to start the software.
+
+©2009 SIKORA AG
+
+Bruchweide 2 
+28307 Bremen 
+Germany
+
+Phone: +49 421 48900 0
+Fax: +49 421 48900 90
+E-Mail: sales@sikora.net
+Internet: www.sikora.net
+
+Service Hotline: +49 421 48900 50
+E-Mail: service@sikora.net
