@@ -256,7 +256,7 @@ void profibus_RX (void)
             break;
 
         case SAP_GLOBAL_CONTROL:                                                // Global Control Request (SSAP 62 -> DSAP 58) // Siehe Felser 8/2009 Kap. 4.6.2
-          if (uart_buffer[9] & CLEAR_DATA_){ /*LED_ERROR_AN;*/ }                  // Если значение "Clear Data" высокое, тогда SPS CPU перевести в состояние "Stop"                                                                              
+          if (uart_buffer[9] & CLEAR_DATA_){ /*LED_ERROR_AN;*/ }                // Если значение "Clear Data" высокое, тогда SPS CPU перевести в состояние "Stop"                                                                              
           else{}//LED_ERROR_AUS;                                                
                                                                   
             for (cnt = 0;  uart_buffer[10] != 0; cnt++) uart_buffer[10]>>=1;    // Рассчёт группы
@@ -606,10 +606,10 @@ void profibus_TX (uint8_t *data, uint8_t length)
     timers_init((uint32_t)(TIMEOUT_MAX_TX_TIME * tBit));                           // Инициализация таймера
 
     TIM_Cmd(TIM3,ENABLE);
-    GPIO_SetBits(GPIOD,GPIO_Pin_4);
-    GPIO_ResetBits(GPIOD,GPIO_Pin_0);
-    GPIO_ResetBits(GPIOD,GPIO_Pin_1);
-    GPIO_ResetBits(GPIOD,GPIO_Pin_2); 
+//    GPIO_SetBits(GPIOD,GPIO_Pin_4);
+//    GPIO_ResetBits(GPIOD,GPIO_Pin_0);
+//    GPIO_ResetBits(GPIOD,GPIO_Pin_1);
+//    GPIO_ResetBits(GPIOD,GPIO_Pin_2); 
     USART2_put_string(data,length);                                           //Загружаем строку в буфер на отправку
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////

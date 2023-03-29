@@ -1,6 +1,6 @@
 ﻿#include "usart_user.h"
 #include "profibus4.h"
-
+#include "stm32f4xx_dma.h"
 uint8_t uart_buffer[BUFFER_SIZE];
 uint16_t rx_index=0, tx_index = 0,tx_counter=0;
 uint8_t uart_bufferTX[BUFFER_SIZE];
@@ -139,10 +139,10 @@ void uart_process(uint8_t byte){
   if (profibus_status == PROFIBUS_WAIT_DATA){   
     profibus_status = PROFIBUS_GET_DATA;                                        //Меняем статус на ПРОСЕСС ПОЛУЧЕНИЯ ДАННЫХ
     
-    GPIO_SetBits(GPIOD,GPIO_Pin_2);
-    GPIO_ResetBits(GPIOD,GPIO_Pin_0);
-    GPIO_ResetBits(GPIOD,GPIO_Pin_1);
-    GPIO_ResetBits(GPIOD,GPIO_Pin_4); 
+//    GPIO_SetBits(GPIOD,GPIO_Pin_2);
+//    GPIO_ResetBits(GPIOD,GPIO_Pin_0);
+//    GPIO_ResetBits(GPIOD,GPIO_Pin_1);
+//    GPIO_ResetBits(GPIOD,GPIO_Pin_4); 
   }
   
   if (profibus_status == PROFIBUS_GET_DATA)  {
@@ -153,4 +153,68 @@ void uart_process(uint8_t byte){
 }
 void uart_error(){
   spiSendByte(rx_index);
+}
+
+void InitUSART1(void){
+  
+  GPIO_InitTypeDef      GPIO_InitStructureUSART;
+  USART_InitTypeDef USART_InitStructureUSART; 
+  DMA_InitTypeDef dma;
+  uint16_t inputData;
+  uint16_t outputData;
+  uint8_t dataBuffer[16] = {'0', '1', '2', '3', '4', '5', '6', '7','8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); 
+ 
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+  DMA_StructInit(&dma);
+  dma.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);                         //Адрес регистра данных USART:
+  dma.DMA_MemoryBaseAddr = (uint32_t)&dataBuffer[0];                            //адрес нулевого элемента массива:
+  dma.DMA_DIR = DMA_DIR_PeripheralDST;                                          //Шлем в периферию, а не из нее:
+  dma.DMA_BufferSize = DMA_BUFFER_SIZE;                                         //Размер буфера – 16 байт
+  dma.DMA_PeripheralInc = DMA_PeripheralInc_Disable;                            //В периферии не инкрементируем, в памяти – инкрементируем
+  dma.DMA_MemoryInc = DMA_MemoryInc_Enable;                                     
+  dma.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;                     //Пересылаем данные байтами:
+  dma.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_Init(DMA1_Channel4, &dma);                                                //Инициализируем:
+ 
+  GPIO_InitStructureUSART.GPIO_Pin = GPIO_Pin_9;
+  GPIO_InitStructureUSART.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructureUSART.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructureUSART.GPIO_PuPd = GPIO_PuPd_UP;
+  GPIO_InitStructureUSART.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructureUSART);
+  
+  GPIO_InitStructureUSART.GPIO_Pin = GPIO_Pin_10;
+  GPIO_InitStructureUSART.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructureUSART.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_Init(GPIOA, &GPIO_InitStructureUSART);
+  
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_USART1); 
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_USART1); 
+    
+  USART_OneBitMethodCmd(USART1,ENABLE);
+  USART_OverSampling8Cmd(USART1,ENABLE);
+  
+  USART_InitTypeDef USART_InitStructureUSART;  
+  USART_InitStructureUSART.USART_BaudRate = 9600;
+  USART_InitStructureUSART.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructureUSART.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+  USART_InitStructureUSART.USART_Parity = USART_Parity_No;
+  USART_InitStructureUSART.USART_StopBits = USART_StopBits_1;
+  USART_InitStructureUSART.USART_WordLength = USART_WordLength_8b;
+  USART_Init(USART1, &USART_InitStructureUSART);
+ 
+  NVIC_SetPriority (USART1_IRQn, 0);
+  NVIC_EnableIRQ (USART1_IRQn);
+
+    
+  //USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+  USART_Cmd(USART2, ENABLE);   
+  USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
+  DMA_Cmd(DMA1_Channel4, ENABLE);
+ 
+  return 0; 
+  
 }

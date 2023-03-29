@@ -82,30 +82,30 @@ void TIM3_IRQHandler(void) {
             profibus_status = PROFIBUS_WAIT_DATA;
             timers_init((uint32_t)(TIMEOUT_MAX_SDR_TIME * tBit));
             rx_index = 0;
-            GPIO_SetBits(GPIOD,GPIO_Pin_1);
-            GPIO_ResetBits(GPIOD,GPIO_Pin_0);
-            GPIO_ResetBits(GPIOD,GPIO_Pin_2);
-            GPIO_ResetBits(GPIOD,GPIO_Pin_4);
+//            GPIO_SetBits(GPIOD,GPIO_Pin_1);
+//            GPIO_ResetBits(GPIOD,GPIO_Pin_0);
+//            GPIO_ResetBits(GPIOD,GPIO_Pin_2);
+//            GPIO_ResetBits(GPIOD,GPIO_Pin_4);
             break;
             
         case PROFIBUS_WAIT_DATA:                                                  // TSDR истёк
-            GPIO_SetBits(GPIOD,GPIO_Pin_1);
-            GPIO_ResetBits(GPIOD,GPIO_Pin_0);
-            GPIO_ResetBits(GPIOD,GPIO_Pin_2);
-            GPIO_ResetBits(GPIOD,GPIO_Pin_4);
+//            GPIO_SetBits(GPIOD,GPIO_Pin_1);
+//            GPIO_ResetBits(GPIOD,GPIO_Pin_0);
+//            GPIO_ResetBits(GPIOD,GPIO_Pin_2);
+//            GPIO_ResetBits(GPIOD,GPIO_Pin_4);
           break;
             
         case PROFIBUS_GET_DATA:                                                   // TSDR истёк, а данные есть
           profibus_status = PROFIBUS_WAIT_SYN;
           timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME * tBit));                      //Время синхронизации пошло    
-          GPIO_SetBits(GPIOD,GPIO_Pin_0);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_1);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_2);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_4);
+//          GPIO_SetBits(GPIOD,GPIO_Pin_0);
+//          GPIO_ResetBits(GPIOD,GPIO_Pin_1);
+//          GPIO_ResetBits(GPIOD,GPIO_Pin_2);
+//          GPIO_ResetBits(GPIOD,GPIO_Pin_4);
           
-          GPIO_SetBits(GPIOD,GPIO_Pin_3);
+//          GPIO_SetBits(GPIOD,GPIO_Pin_3);
           profibus_RX();
-          GPIO_ResetBits(GPIOD,GPIO_Pin_3);
+//          GPIO_ResetBits(GPIOD,GPIO_Pin_3);
           
           
           
@@ -115,10 +115,10 @@ void TIM3_IRQHandler(void) {
         case PROFIBUS_SEND_DATA:                                                  // Время ожидания отправки истекло, переводим на получение
           profibus_status = PROFIBUS_WAIT_SYN;         
           timers_init((uint32_t)(TIMEOUT_MAX_SYN_TIME * tBit));                      //Время синхронизации пошло   
-          GPIO_SetBits(GPIOD,GPIO_Pin_0);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_1);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_2);
-          GPIO_ResetBits(GPIOD,GPIO_Pin_4);          
+//          GPIO_SetBits(GPIOD,GPIO_Pin_0);
+//          GPIO_ResetBits(GPIOD,GPIO_Pin_1);
+//          GPIO_ResetBits(GPIOD,GPIO_Pin_2);
+//          GPIO_ResetBits(GPIOD,GPIO_Pin_4);          
           break;
         
         default:          

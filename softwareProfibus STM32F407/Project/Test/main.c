@@ -32,8 +32,9 @@ void main(void) {
     
 //    EXTILine_Config();
 //    timer5_init();
-    
-    
+
+    GPIO_SetBits(GPIOD,GPIO_Pin_3);
+     
     while(!buadOK){
       baudNum++;
       if(baudNum>7) baudNum=0;
@@ -42,7 +43,8 @@ void main(void) {
       delay_1_ms(100);
       
     }
-
+//   InitUSART2(0);
+//   init_Profibus (0);
   
     
     SPI_Config();

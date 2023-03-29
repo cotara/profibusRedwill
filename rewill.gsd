@@ -6,7 +6,7 @@ Model_Name          = "Model 1"
 Revision            = "V1.00"
 Ident_Number        = 0x8070
 Hardware_Release    = "V1.01"
-Software_Release    = "V1.02"
+Software_Release    = "V1.03"
 Bitmap_Device       = "Redwill"
 Bitmap_Diag          = "Redwill"
 
@@ -138,6 +138,10 @@ EndModule
 ;
 Module = "16 Bytes Output" 0x2F
 10
+EndModule
+;
+Module = "Capacitance 2000 / Modul 1" 0x15,  0x24
+11
 EndModule
 
 
