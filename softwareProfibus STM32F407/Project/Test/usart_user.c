@@ -169,10 +169,10 @@ void InitUSART1(void){
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); 
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
   
-  GPIO_InitStructureUSART.GPIO_Pin = GPIO_Pin_9;
+ GPIO_InitStructureUSART.GPIO_Pin = GPIO_Pin_9;
   GPIO_InitStructureUSART.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructureUSART.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructureUSART.GPIO_PuPd = GPIO_PuPd_UP;
+  GPIO_InitStructureUSART.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructureUSART.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructureUSART);
   
@@ -183,11 +183,20 @@ void InitUSART1(void){
   
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1); 
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1); 
+  
+ /*GPIO_InitStructureUSART.GPIO_Pin = GPIO_Pin_9 ;
+  GPIO_InitStructureUSART.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructureUSART.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructureUSART.GPIO_Speed = GPIO_Medium_Speed;
+  GPIO_InitStructureUSART.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOA, &GPIO_InitStructureUSART);*/
+  
+  
     
   USART_OneBitMethodCmd(USART1,ENABLE);
   USART_OverSampling8Cmd(USART1,ENABLE);
  
-  USART_InitStructureUSART.USART_BaudRate = 9600;
+  USART_InitStructureUSART.USART_BaudRate = 115200;
   USART_InitStructureUSART.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructureUSART.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_InitStructureUSART.USART_Parity = USART_Parity_No;
@@ -195,8 +204,8 @@ void InitUSART1(void){
   USART_InitStructureUSART.USART_WordLength = USART_WordLength_8b;
   USART_Init(USART1, &USART_InitStructureUSART);
 // 
-  NVIC_SetPriority (USART1_IRQn, 10);
-  NVIC_EnableIRQ (USART1_IRQn);
+//  NVIC_SetPriority (USART1_IRQn, 10);
+//  NVIC_EnableIRQ (USART1_IRQn);
 
     
   //USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
@@ -237,7 +246,7 @@ void InitUSART1(void){
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);           //Адрес регистра данных USART:
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&dataInBuffer[0];           //адрес нулевого элемента массива:
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;                       //Шлем в периферию, а не из нее:
-  DMA_InitStructure.DMA_BufferSize = 100;                                       //Размер буфера – 16 байт
+  DMA_InitStructure.DMA_BufferSize = 73;                                       //Размер буфера – 16 байт
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;              //В периферии не инкрементируем
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;                       //в памяти – инкрементируем
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;       //Пересылаем данные байтами:

@@ -64,16 +64,18 @@ void USART1_IRQHandler(void) {
        USART_ClearITPendingBit(USART1, USART_IT_TC); 
        USART_ITConfig(USART1, USART_IT_TC, DISABLE);
     }
-    if (USART_GetITStatus(USART1, USART_IT_IDLE) == SET) {                      //Закончили прием по DMA
-       USART_ClearITPendingBit(USART1, USART_IT_IDLE); 
-       USART_ITConfig(USART1, USART_IT_IDLE, DISABLE);
-         dataSizeRecieved=100-DMA_GetCurrDataCounter(DMA2_Stream5);
-         memcpy(data_out_register,dataInBuffer,dataSizeRecieved);
-         DMA_Cmd(DMA2_Stream5, DISABLE);
-         DMA2_Stream5->M0AR = dataInBuffer[0];
-         DMA_Cmd(DMA2_Stream5, ENABLE);
-         _cnt++;
-    }
+//    if (USART_GetITStatus(USART1, USART_IT_IDLE) == SET) {                      //Закончили прием по DMA
+//       USART_ClearITPendingBit(USART1, USART_IT_IDLE); 
+//       USART_ITConfig(USART1, USART_IT_IDLE, DISABLE);
+//         dataSizeRecieved=100-DMA_GetCurrDataCounter(DMA2_Stream5);
+//         memcpy(data_out_register,&dataInBuffer[3],12);
+//         memcpy(&data_out_register[12],&dataInBuffer[19],8);
+//         memcpy(&data_out_register[20],&dataInBuffer[26],1);
+//         DMA_Cmd(DMA2_Stream5, DISABLE);
+//         DMA2_Stream5->M0AR = dataInBuffer[0];
+//         DMA_Cmd(DMA2_Stream5, ENABLE);
+//         _cnt++;
+//    }
 }
 
 void USART2_IRQHandler(void) {  
@@ -189,19 +191,30 @@ void TIM3_IRQHandler(void) {
 void TIM5_IRQHandler(void) {
   if (TIM_GetITStatus(TIM5, TIM_IT_Update) != RESET){
    DMA_Cmd(DMA2_Stream7, ENABLE);
-   USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
+   
    TIM_ClearFlag(TIM5, TIM_IT_Update); 
   }
 }
 void DMA2_Stream7_IRQHandler(){
  if (DMA_GetITStatus(DMA2_Stream7, DMA_IT_TCIF7) != RESET){
    DMA_Cmd(DMA2_Stream7, DISABLE);
+   //USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
    DMA_ClearFlag(DMA2_Stream7, DMA_IT_TCIF7);
  }
 }
 void DMA2_Stream5_IRQHandler(){
  if (DMA_GetITStatus(DMA2_Stream5, DMA_IT_TCIF5) != RESET){
+   
    DMA_ClearFlag(DMA2_Stream5, DMA_IT_TCIF5);
+   memcpy(data_out_register,&dataInBuffer[3],12);
+   memcpy(&data_out_register[12],&dataInBuffer[19],8);
+   memcpy(&data_out_register[20],&dataInBuffer[30],1);
+   _cnt++;
+    dataSizeRecieved=73-DMA_GetCurrDataCounter(DMA2_Stream5);
+//         DMA_Cmd(DMA2_Stream5, DISABLE);
+//         DMA2_Stream5->M0AR = dataInBuffer[0];
+//         DMA_Cmd(DMA2_Stream5, ENABLE);
+   
  }
 }
 /******************* (C) COPYRIGHT 2010 STMicroelectronics *****END OF FILE****/

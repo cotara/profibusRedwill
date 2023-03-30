@@ -39,6 +39,31 @@ MaxTsdr_3M          = 250
 MaxTsdr_6M          = 450
 MaxTsdr_12M         = 800
 
+
+
+;HARDWARE CONFIGURATION ------------------------
+Redundancy          = 0
+Repeater_Ctrl_Sig   = 0
+24V_Pins            = 0
+Implementation_Type = "SPC3"
+
+
+; PROTOCOL CONFIGURATION -----------------------
+Freeze_Mode_supp    = 1
+Sync_Mode_supp      = 1
+Auto_Baud_supp      = 1
+Set_Slave_Add_supp  = 0
+Fail_Safe           = 0
+User_Prm_Data_Len = 0 
+
+
+Min_Slave_Intervall = 1
+Modular_Station     = 1
+Max_Module          = 16
+Max_Input_Len       = 128                    ; maximum Input Length
+Max_Output_Len      = 128                    ; maximum Output Length
+Max_Data_Len        = 256                    ; maximum In-Output Length
+
 ;------------------------ PARAMETER Text DEFINITIONS-------------------------------
 ;
 PrmText = 1
@@ -124,33 +149,19 @@ BitArea(2-3)  0 0-2
 Prm_Text_Ref = 7
 EndExtUserPrmData
 ;
-
-;HARDWARE CONFIGURATION ------------------------
-Redundancy          = 0
-Repeater_Ctrl_Sig   = 0
-24V_Pins            = 0
-Implementation_Type = "SPC3"
-
-
-; PROTOCOL CONFIGURATION -----------------------
-Freeze_Mode_supp    = 1
-Sync_Mode_supp      = 1
-Auto_Baud_supp      = 1
-Set_Slave_Add_supp  = 0
-Fail_Safe           = 0
-User_Prm_Data_Len = 0 
-
-
-Min_Slave_Intervall = 1
-Modular_Station     = 1
-Max_Module          = 16
-Max_Input_Len       = 128                    ; maximum Input Length
-Max_Output_Len      = 128                    ; maximum Output Length
-Max_Data_Len        = 256                    ; maximum In-Output Length
-
-Max_Diag_Data_Len=36
-Max_User_Prm_Data_Len = 4
-Ext_User_Prm_Data_Const(0) = 0x80,0x81,0x82,0x83 
+;
+;------------------------ EXT_USER_PARAMETER DEFINITIONS -------------------------------- 
+;
+Max_Diag_Data_Len=40
+Max_User_Prm_Data_Len = 8
+Ext_User_Prm_Data_Const(0) = 0x00
+Ext_User_Prm_Data_Ref(3) = 0
+Ext_User_Prm_Data_Ref(4) = 1
+Ext_User_Prm_Data_Ref(5) = 2
+Ext_User_Prm_Data_Ref(6) = 3
+Ext_User_Prm_Data_Ref(7) = 4
+Ext_User_Prm_Data_Ref(7) = 5
+Ext_User_Prm_Data_Ref(7) = 6
 
 ;Description of device related diagnosis: ---------
 ;
