@@ -4,16 +4,20 @@
 #include "usart_user.h"
 #include "LED_user.h"
 #include "profibus4.h"
+#include "stm32f4xx_dma.h"
 
-extern  uint8_t uart_buffer[BUFFER_SIZE], uart_bufferTX[BUFFER_SIZE];;
-extern  uint16_t rx_index, tx_index,tx_counter;
+extern  uint8_t uart_buffer[BUFFER_SIZE], uart_bufferTX[BUFFER_SIZE], uart1_bufferTX[BUFFER_SIZE];
+extern  uint16_t rx_index, tx_index,tx_counter,tx1_index,tx1_counter;
 extern uint8_t profibus_status;
 extern uint32_t tBit;
-uint16_t txrd_index=0;
+uint16_t txrd_index=0,txrd1_index=0;
 uint32_t mcs=0;
 uint32_t counter=0;
 uint32_t tick=0;
 uint32_t speed=1000000;
+extern uint8_t dataBuffer[16],dataInBuffer[100], data_out_register[100];
+uint32_t dataSizeRecieved=0;
+uint32_t _cnt=0;
 void HardFault_Handler(void) {
     /* Go to infinite loop when Hard Fault exception occurs */
     while (1) {
@@ -24,6 +28,52 @@ void SysTick_Handler(void) {
     /* Decrement the timeout value */
     TimingDelay_1ms_Decrement();
       
+}
+
+void USART1_IRQHandler(void) {  
+  
+    if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
+        USART_ClearITPendingBit(USART1, USART_IT_RXNE);                         //очистка признака прерывания       
+        if ((USART1->SR & (USART_FLAG_NE|USART_FLAG_FE|USART_FLAG_PE|USART_FLAG_ORE)) == 0) {              //нет ошибок
+              //TIM3->CNT = 0;                                                    // Сброс таймера Profibus
+              //uart_process(USART_ReceiveData(USART1) & 0xFF);
+        }                                                                       //Сообщение из USART пришло без ошибок
+        else{
+           USART_ReceiveData(USART1);
+        }
+    }
+        
+    if (USART_GetITStatus(USART1, USART_IT_ORE_RX) == SET) {                     //прерывание по переполнению ошибке четности
+      USART_ReceiveData(USART1);                                              //в идеале пишем здесь обработчик переполнения буфера, но мы просто сбрасываем этот флаг прерывания чтением из регистра данных.
+    }
+    
+    
+    if (USART_GetITStatus(USART1, USART_IT_TXE) != RESET) {                      //прерывание по передаче
+      USART_ClearITPendingBit(USART1, USART_IT_TXE);                           //очищаем признак прерывания
+        if (tx1_counter) {                                                       //если есть что передать
+            --tx1_counter;                                                       // уменьшаем количество не переданных данных
+            USART_SendData(USART1, uart1_bufferTX[txrd1_index++]);                  //передаем данные инкрементируя хвост буфера
+        }
+        else{
+            USART_ITConfig(USART1, USART_IT_TXE, DISABLE);                       //если нечего передать, запрещаем прерывание по передаче
+            USART_ITConfig(USART1, USART_IT_TC, ENABLE);
+            txrd1_index=0;
+        }
+    }
+    if (USART_GetITStatus(USART1, USART_IT_TC) != RESET) {  
+       USART_ClearITPendingBit(USART1, USART_IT_TC); 
+       USART_ITConfig(USART1, USART_IT_TC, DISABLE);
+    }
+    if (USART_GetITStatus(USART1, USART_IT_IDLE) == SET) {                      //Закончили прием по DMA
+       USART_ClearITPendingBit(USART1, USART_IT_IDLE); 
+       USART_ITConfig(USART1, USART_IT_IDLE, DISABLE);
+         dataSizeRecieved=100-DMA_GetCurrDataCounter(DMA2_Stream5);
+         memcpy(data_out_register,dataInBuffer,dataSizeRecieved);
+         DMA_Cmd(DMA2_Stream5, DISABLE);
+         DMA2_Stream5->M0AR = dataInBuffer[0];
+         DMA_Cmd(DMA2_Stream5, ENABLE);
+         _cnt++;
+    }
 }
 
 void USART2_IRQHandler(void) {  
@@ -138,21 +188,20 @@ void TIM3_IRQHandler(void) {
 //Таймер для задержек
 void TIM5_IRQHandler(void) {
   if (TIM_GetITStatus(TIM5, TIM_IT_Update) != RESET){
-    tick++; 
-    TIM_ClearFlag(TIM5, TIM_IT_Update); 
-   //GPIOD->ODR ^= GPIO_Pin_4;
+   DMA_Cmd(DMA2_Stream7, ENABLE);
+   USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
+   TIM_ClearFlag(TIM5, TIM_IT_Update); 
   }
 }
-
-void EXTI9_5_IRQHandler(void)
-{
-  if(EXTI_GetITStatus(EXTI_Line6) != RESET)
-  {
-    if(tick<speed)
-      speed=tick;
-    tick=0;
-    
-    EXTI_ClearITPendingBit(EXTI_Line6);
-  }
+void DMA2_Stream7_IRQHandler(){
+ if (DMA_GetITStatus(DMA2_Stream7, DMA_IT_TCIF7) != RESET){
+   DMA_Cmd(DMA2_Stream7, DISABLE);
+   DMA_ClearFlag(DMA2_Stream7, DMA_IT_TCIF7);
+ }
+}
+void DMA2_Stream5_IRQHandler(){
+ if (DMA_GetITStatus(DMA2_Stream5, DMA_IT_TCIF5) != RESET){
+   DMA_ClearFlag(DMA2_Stream5, DMA_IT_TCIF5);
+ }
 }
 /******************* (C) COPYRIGHT 2010 STMicroelectronics *****END OF FILE****/

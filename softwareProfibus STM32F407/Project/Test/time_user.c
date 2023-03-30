@@ -41,9 +41,9 @@ void timer5_init(void){
 
   TIM_InternalClockConfig(TIM5);
   
-  TIM_TimeBaseStructure.TIM_Prescaler = 7;                                    //Смотреть осцилом
+  TIM_TimeBaseStructure.TIM_Prescaler = 8400-1;                                    //Смотреть осцилом
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_Period = 4;                                         //6Мгц
+  TIM_TimeBaseStructure.TIM_Period = 10000-1;                                         //6Мгц
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM5,&TIM_TimeBaseStructure);

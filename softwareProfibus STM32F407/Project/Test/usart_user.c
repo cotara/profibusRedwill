@@ -2,10 +2,11 @@
 #include "profibus4.h"
 #include "stm32f4xx_dma.h"
 uint8_t uart_buffer[BUFFER_SIZE];
-uint16_t rx_index=0, tx_index = 0,tx_counter=0;
+uint16_t rx_index=0, tx_index = 0,tx_counter=0,tx1_index=0,tx1_counter=0;
 uint8_t uart_bufferTX[BUFFER_SIZE];
+uint8_t uart1_bufferTX[BUFFER1_SIZE];
 extern uint8_t profibus_status;
-
+extern uint8_t dataBuffer[16],dataInBuffer[100];
 
 
 void EXTILine_Config(void)
@@ -159,26 +160,15 @@ void InitUSART1(void){
   
   GPIO_InitTypeDef      GPIO_InitStructureUSART;
   USART_InitTypeDef USART_InitStructureUSART; 
-  DMA_InitTypeDef dma;
+  DMA_InitTypeDef DMA_InitStructure;
   uint16_t inputData;
   uint16_t outputData;
-  uint8_t dataBuffer[16] = {'0', '1', '2', '3', '4', '5', '6', '7','8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+  
     
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); 
- 
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-  DMA_StructInit(&dma);
-  dma.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);                         //Адрес регистра данных USART:
-  dma.DMA_MemoryBaseAddr = (uint32_t)&dataBuffer[0];                            //адрес нулевого элемента массива:
-  dma.DMA_DIR = DMA_DIR_PeripheralDST;                                          //Шлем в периферию, а не из нее:
-  dma.DMA_BufferSize = DMA_BUFFER_SIZE;                                         //Размер буфера – 16 байт
-  dma.DMA_PeripheralInc = DMA_PeripheralInc_Disable;                            //В периферии не инкрементируем, в памяти – инкрементируем
-  dma.DMA_MemoryInc = DMA_MemoryInc_Enable;                                     
-  dma.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;                     //Пересылаем данные байтами:
-  dma.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-  DMA_Init(DMA1_Channel4, &dma);                                                //Инициализируем:
- 
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
+  
   GPIO_InitStructureUSART.GPIO_Pin = GPIO_Pin_9;
   GPIO_InitStructureUSART.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructureUSART.GPIO_OType = GPIO_OType_PP;
@@ -191,13 +181,12 @@ void InitUSART1(void){
   GPIO_InitStructureUSART.GPIO_Mode = GPIO_Mode_AF;
   GPIO_Init(GPIOA, &GPIO_InitStructureUSART);
   
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_USART1); 
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_USART1); 
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1); 
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1); 
     
   USART_OneBitMethodCmd(USART1,ENABLE);
   USART_OverSampling8Cmd(USART1,ENABLE);
-  
-  USART_InitTypeDef USART_InitStructureUSART;  
+ 
   USART_InitStructureUSART.USART_BaudRate = 9600;
   USART_InitStructureUSART.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructureUSART.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
@@ -205,16 +194,92 @@ void InitUSART1(void){
   USART_InitStructureUSART.USART_StopBits = USART_StopBits_1;
   USART_InitStructureUSART.USART_WordLength = USART_WordLength_8b;
   USART_Init(USART1, &USART_InitStructureUSART);
- 
-  NVIC_SetPriority (USART1_IRQn, 0);
+// 
+  NVIC_SetPriority (USART1_IRQn, 10);
   NVIC_EnableIRQ (USART1_IRQn);
 
     
-  //USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-  USART_Cmd(USART2, ENABLE);   
+  //USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
+  USART_Cmd(USART1, ENABLE);   
   USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
-  DMA_Cmd(DMA1_Channel4, ENABLE);
- 
-  return 0; 
+  USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
+  //TX DMA
+  DMA_DeInit(DMA2_Stream7);
+  DMA_InitStructure.DMA_Channel = DMA_Channel_4;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);           //Адрес регистра данных USART:
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&dataBuffer[0];             //адрес нулевого элемента массива:
+  DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;                       //Шлем в периферию, а не из нее:
+  DMA_InitStructure.DMA_BufferSize = BUFFER1_SIZE;                                        //Размер буфера – 16 байт
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;              //В периферии не инкрементируем
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;                       //в памяти – инкрементируем
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;       //Пересылаем данные байтами:
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_PeripheralDataSize_Byte;           //Пересылаем данные байтами:
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;                               //
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
+  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+  DMA_Init(DMA2_Stream7, &DMA_InitStructure);
   
+  
+  NVIC_SetPriority (DMA2_Stream7_IRQn, 0);
+  NVIC_EnableIRQ(DMA2_Stream7_IRQn);
+  DMA_ITConfig(DMA2_Stream7,DMA_IT_TC,ENABLE);
+  
+  DMA_Cmd(DMA2_Stream7, ENABLE);
+  
+  
+  //RX DMA
+  
+  DMA_DeInit(DMA2_Stream5);
+  DMA_InitStructure.DMA_Channel = DMA_Channel_4;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);           //Адрес регистра данных USART:
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&dataInBuffer[0];           //адрес нулевого элемента массива:
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;                       //Шлем в периферию, а не из нее:
+  DMA_InitStructure.DMA_BufferSize = 100;                                       //Размер буфера – 16 байт
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;              //В периферии не инкрементируем
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;                       //в памяти – инкрементируем
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;       //Пересылаем данные байтами:
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_PeripheralDataSize_Byte;           //Пересылаем данные байтами:
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;                               //
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
+  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+  DMA_Init(DMA2_Stream5, &DMA_InitStructure);
+  
+  
+  NVIC_SetPriority (DMA2_Stream5_IRQn, 0);
+  NVIC_EnableIRQ(DMA2_Stream5_IRQn);
+  DMA_ITConfig(DMA2_Stream5,DMA_IT_TC,ENABLE);
+  
+  DMA_Cmd(DMA2_Stream5, ENABLE);
+
+}
+
+void USART1_put_char(uint8_t c) {
+  while (tx_counter == BUFFER1_SIZE);                                            //если буфер переполнен, ждем
+  USART_ITConfig(USART1, USART_IT_TXE, DISABLE);                                 //запрещаем прерывание, чтобы оно не мешало менять переменную
+  
+  if (tx1_counter || (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET))     //если в буфере уже что-то есть или если в данный момент что-то уже передается
+  {
+    uart1_bufferTX[tx1_index++] = c;                                              //то кладем данные в отдельный буфер отправки 
+    if (tx1_index == BUFFER1_SIZE) tx1_index=0;                                    //идем по кругу
+    ++tx1_counter;                                                               //увеличиваем счетчик количества данных в буфере
+  }
+  else                                                                          //если UART свободен
+    USART_SendData(USART1, c);                                                  //передаем данные без прерывания
+  
+  USART_ITConfig(USART1, USART_IT_TXE, ENABLE);                                  //разрешаем прерывание
+}
+
+void USART1_put_string_2(unsigned char *string, uint32_t l) {
+  tx1_index=0;                                                                   //Передаём cначала
+  tx1_counter=l;//это ЭЛЬ! А не единица
+  while (l != 0){
+    USART1_put_char(*string++);
+    l--;
+  }
 }

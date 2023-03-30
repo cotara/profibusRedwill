@@ -6,7 +6,7 @@ Model_Name          = "Model 1"
 Revision            = "V1.00"
 Ident_Number        = 0x8070
 Hardware_Release    = "V1.01"
-Software_Release    = "V1.03"
+Software_Release    = "V1.04"
 Bitmap_Device       = "Redwill"
 Bitmap_Diag          = "Redwill"
 
@@ -38,6 +38,92 @@ MaxTsdr_1.5M        = 150
 MaxTsdr_3M          = 250
 MaxTsdr_6M          = 450
 MaxTsdr_12M         = 800
+
+;------------------------ PARAMETER Text DEFINITIONS-------------------------------
+;
+PrmText = 1
+Text(1) = "1200 baud"
+Text(2) = "2400 baud"
+Text(3) = "4800 baud"
+Text(4) = "9600 baud"
+Text(5) = "19200 baud"
+Text(6) = "38400 baud"
+Text(7) = "57600 baud"
+Text(8)="115200 baud"
+EndPrmText
+;
+PrmText=2
+Text(0) = "none"
+Text(1) = "even"
+Text(2) = "odd"
+EndPrmText
+;
+PrmText=3
+Text(0) = "7 data bit"
+Text(1) = "8 data bit"
+EndPrmText
+;
+PrmText=4
+Text(0) = "None"
+Text(1) = "CR"
+Text(2) = "LF"
+Text(3) = "CR+LF"
+Text(4) = "LF+CR"
+EndPrmText
+;
+PrmText=5
+Text(0) = "Disable"
+Text(1) ="Enable"
+ EndPrmText
+;
+PrmText=6
+Text(0) = "1 ms"
+Text(1) ="10 ms"
+ EndPrmText
+;
+PrmText=7
+Text(0) = "None"
+Text(1) ="Master/Slave mode"
+Text(2) ="Cyclic input data mode"
+ EndPrmText
+;
+;------------------------ Ext PARAMETER DEFINITIONS -------------------------------- 
+;
+ExtUserPrmData = 0 "baud rate "
+Unsigned8 8 1-8
+Prm_Text_Ref = 1
+EndExtUserPrmData
+;
+ExtUserPrmData = 1 "parity "
+Unsigned8 0 0-2
+Prm_Text_Ref = 2
+EndExtUserPrmData
+;
+ExtUserPrmData = 2 "data "
+Unsigned8 1 0-1
+Prm_Text_Ref = 3
+EndExtUserPrmData
+;
+ExtUserPrmData = 3 "end char of input data"
+Unsigned8 1 0-4
+Prm_Text_Ref = 4
+EndExtUserPrmData
+;
+ExtUserPrmData = 4 "input fixed length data"
+Bit(0) 0 0-1
+Prm_Text_Ref = 5
+EndExtUserPrmData
+;
+ExtUserPrmData = 5 "unit of time out value"
+Bit(1) 0 0-1
+Prm_Text_Ref = 6
+EndExtUserPrmData
+;
+ExtUserPrmData = 6 "diagnosis of time out"
+BitArea(2-3)  0 0-2
+Prm_Text_Ref = 7
+EndExtUserPrmData
+;
 
 ;HARDWARE CONFIGURATION ------------------------
 Redundancy          = 0

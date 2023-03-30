@@ -15,23 +15,22 @@ extern  uint8_t uart_buffer[BUFFER_SIZE];
 extern  uint16_t rx_index, tx_index,tx_counter;
 uint8_t baudNum=-1;
 uint8_t buadOK=0;
+uint8_t dataBuffer[16] = {0x01, 0x02, 0x00, 0x10, 0x00, 0x22,0xF9,0xD6};
+uint8_t dataInBuffer[100];
 /********************************************************
 * MAIN
 ********************************************************/
 
 void main(void) {
-  uint8_t _buf[10] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A};
+    uint8_t _buf[10] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A};
     
     RCC_ClocksTypeDef RCC_Clocks;
     RCC_GetClocksFreq(&RCC_Clocks);
     SysTick_Config(SystemCoreClock/1000);
-    
+        
     LEDInit();
-    
-    //delay_1_ms(100);
-    
-//    EXTILine_Config();
-//    timer5_init();
+    InitUSART1();
+    timer5_init();
 
     GPIO_SetBits(GPIOD,GPIO_Pin_3);
      
@@ -43,8 +42,7 @@ void main(void) {
       delay_1_ms(100);
       
     }
-//   InitUSART2(0);
-//   init_Profibus (0);
+
   
     
     SPI_Config();

@@ -21,10 +21,6 @@ rule browsedata
 
 #Build steps
 build system_stm32f4xx.pbi : index system_stm32f4xx.xcl
-build user_ds18b20.pbi : index user_ds18b20.xcl
-build i2c_ee.pbi : index i2c_ee.xcl
-build tm_stm32f4_gpio.pbi : index tm_stm32f4_gpio.xcl
-build tm_stm32f4_i2c.pbi : index tm_stm32f4_i2c.xcl
 build misc.pbi : index misc.xcl
 build stm32f4xx_dma.pbi : index stm32f4xx_dma.xcl
 build stm32f4xx_exti.pbi : index stm32f4xx_exti.xcl
@@ -40,16 +36,16 @@ build stm32f4xx_tim.pbi : index stm32f4xx_tim.xcl
 build stm32f4xx_usart.pbi : index stm32f4xx_usart.xcl
 build LED_user.pbi : index LED_user.xcl
 build main.pbi : index main.xcl
-build myNextion.pbi : index myNextion.xcl
+build profibus4.pbi : index profibus4.xcl
+build spi_user.pbi : index spi_user.xcl
 build stm32f2xx_it.pbi : index stm32f2xx_it.xcl
 build time_user.pbi : index time_user.xcl
-build transp.pbi : index transp.xcl
 build usart_user.pbi : index usart_user.xcl
-build Project_part0.pbi : link system_stm32f4xx.pbi user_ds18b20.pbi i2c_ee.pbi tm_stm32f4_gpio.pbi tm_stm32f4_i2c.pbi
-build Project_part1.pbi : link misc.pbi stm32f4xx_dma.pbi stm32f4xx_exti.pbi stm32f4xx_gpio.pbi stm32f4xx_i2c.pbi
-build Project_part2.pbi : link stm32f4xx_pwr.pbi stm32f4xx_rcc.pbi stm32f4xx_rtc.pbi stm32f4xx_sdio.pbi stm32f4xx_spi.pbi
-build Project_part3.pbi : link stm32f4xx_syscfg.pbi stm32f4xx_tim.pbi stm32f4xx_usart.pbi LED_user.pbi main.pbi
-build Project_part4.pbi : link myNextion.pbi stm32f2xx_it.pbi time_user.pbi transp.pbi usart_user.pbi
+build Project_part0.pbi : link system_stm32f4xx.pbi misc.pbi stm32f4xx_dma.pbi stm32f4xx_exti.pbi stm32f4xx_gpio.pbi
+build Project_part1.pbi : link stm32f4xx_i2c.pbi stm32f4xx_pwr.pbi stm32f4xx_rcc.pbi stm32f4xx_rtc.pbi stm32f4xx_sdio.pbi
+build Project_part2.pbi : link stm32f4xx_spi.pbi stm32f4xx_syscfg.pbi stm32f4xx_tim.pbi stm32f4xx_usart.pbi LED_user.pbi
+build Project_part3.pbi : link main.pbi profibus4.pbi spi_user.pbi stm32f2xx_it.pbi time_user.pbi
+build Project_part4.pbi : link usart_user.pbi
 build Project.pbd : link Project_part0.pbi Project_part1.pbi Project_part2.pbi Project_part3.pbi Project_part4.pbi
 build Project.pbw : browsedata Project.pbd
 
