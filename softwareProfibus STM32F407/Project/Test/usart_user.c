@@ -216,7 +216,7 @@ void InitUSART1(void){
   DMA_DeInit(DMA2_Stream7);
   DMA_InitStructure.DMA_Channel = DMA_Channel_4;
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);           //Адрес регистра данных USART:
-  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&dataBuffer[0];             //адрес нулевого элемента массива:
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&uart1_tx_buf[0];             //адрес нулевого элемента массива:
   DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;                       //Шлем в периферию, а не из нее:
   DMA_InitStructure.DMA_BufferSize = BUFFER1_SIZE;                                        //Размер буфера – 16 байт
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;              //В периферии не инкрементируем
@@ -244,7 +244,7 @@ void InitUSART1(void){
   DMA_DeInit(DMA2_Stream5);
   DMA_InitStructure.DMA_Channel = DMA_Channel_4;
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);           //Адрес регистра данных USART:
-  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&dataInBuffer[0];           //адрес нулевого элемента массива:
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&uart1_rx_buf[0];           //адрес нулевого элемента массива:
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;                       //Шлем в периферию, а не из нее:
   DMA_InitStructure.DMA_BufferSize = 73;                                       //Размер буфера – 16 байт
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;              //В периферии не инкрементируем
@@ -264,7 +264,7 @@ void InitUSART1(void){
   NVIC_EnableIRQ(DMA2_Stream5_IRQn);
   DMA_ITConfig(DMA2_Stream5,DMA_IT_TC,ENABLE);
   
-  DMA_Cmd(DMA2_Stream5, ENABLE);
+  //DMA_Cmd(DMA2_Stream5, ENABLE);
 
 }
 

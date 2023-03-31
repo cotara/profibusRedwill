@@ -61,8 +61,8 @@ uint8_t slave_addr;
 uint8_t master_addr;
 uint8_t group;
 uint8_t inputSize,outputSize;
-uint8_t data_out_register[100];
-uint8_t data_in_register [INPUT_DATA_SIZE]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+uint8_t data_out_register[INPUT_DATA_SIZE];
+uint8_t data_in_register [INPUT_DATA_SIZE];
 uint32_t errorCount = 0;
 uint32_t tBit=1250;
 

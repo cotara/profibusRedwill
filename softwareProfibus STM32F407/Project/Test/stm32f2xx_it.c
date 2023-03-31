@@ -204,16 +204,18 @@ void DMA2_Stream7_IRQHandler(){
 }
 void DMA2_Stream5_IRQHandler(){
  if (DMA_GetITStatus(DMA2_Stream5, DMA_IT_TCIF5) != RESET){
-   
    DMA_ClearFlag(DMA2_Stream5, DMA_IT_TCIF5);
-   memcpy(data_out_register,&dataInBuffer[3],12);
-   memcpy(&data_out_register[12],&dataInBuffer[19],8);
-   memcpy(&data_out_register[20],&dataInBuffer[30],1);
-   _cnt++;
-    dataSizeRecieved=73-DMA_GetCurrDataCounter(DMA2_Stream5);
-//         DMA_Cmd(DMA2_Stream5, DISABLE);
-//         DMA2_Stream5->M0AR = dataInBuffer[0];
-//         DMA_Cmd(DMA2_Stream5, ENABLE);
+   if(devModel==0){
+     devModel=uart1_rx_buf[0];
+   }
+   else{
+     if(devModel == 1)                                                          
+     memcpy(data_out_register,&dataInBuffer[3],12);
+     memcpy(&data_out_register[12],&dataInBuffer[19],8);
+     memcpy(&data_out_register[20],&dataInBuffer[30],1);
+     _cnt++;
+      dataSizeRecieved=73-DMA_GetCurrDataCounter(DMA2_Stream5);
+   }
    
  }
 }
