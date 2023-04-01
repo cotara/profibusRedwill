@@ -1,19 +1,21 @@
 ﻿#include "usart_user.h"
 #include "profibus4.h"
 #include "stm32f4xx_dma.h"
-uint8_t uart_buffer[BUFFER_SIZE];
-uint16_t rx_index=0, tx_index = 0,tx_counter=0,tx1_index=0,tx1_counter=0;
-uint8_t uart_bufferTX[BUFFER_SIZE];
-uint8_t uart1_bufferTX[BUFFER1_SIZE];
-extern uint8_t profibus_status;
-extern uint8_t dataBuffer[16],dataInBuffer[100];
+#include "spi_user.h"
+#include "spi_user.h"
+#include "main.h"
 
+uint8_t uart_buffer[BUFFER_SIZE],uart_bufferTX[BUFFER_SIZE];
+uint16_t rx_index=0, tx_index = 0,tx_counter=0;
+
+extern uint8_t profibus_status;
+extern uint8_t uart1_rx_buf[100];
+extern uint8_t reqBuffer[10][8];
 
 void EXTILine_Config(void)
 {
   EXTI_InitTypeDef   EXTI_InitStructure;
   GPIO_InitTypeDef   GPIO_InitStructure;
-  NVIC_InitTypeDef   NVIC_InitStructure;
 
   /* Enable GPIOA clock */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
@@ -139,11 +141,6 @@ void uart_process(uint8_t byte){
   // TSYN истек, находимся в режиме ожидания данных. Приём первого байта
   if (profibus_status == PROFIBUS_WAIT_DATA){   
     profibus_status = PROFIBUS_GET_DATA;                                        //Меняем статус на ПРОСЕСС ПОЛУЧЕНИЯ ДАННЫХ
-    
-//    GPIO_SetBits(GPIOD,GPIO_Pin_2);
-//    GPIO_ResetBits(GPIOD,GPIO_Pin_0);
-//    GPIO_ResetBits(GPIOD,GPIO_Pin_1);
-//    GPIO_ResetBits(GPIOD,GPIO_Pin_4); 
   }
   
   if (profibus_status == PROFIBUS_GET_DATA)  {
@@ -161,9 +158,6 @@ void InitUSART1(void){
   GPIO_InitTypeDef      GPIO_InitStructureUSART;
   USART_InitTypeDef USART_InitStructureUSART; 
   DMA_InitTypeDef DMA_InitStructure;
-  uint16_t inputData;
-  uint16_t outputData;
-  
     
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); 
@@ -184,15 +178,6 @@ void InitUSART1(void){
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1); 
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1); 
   
- /*GPIO_InitStructureUSART.GPIO_Pin = GPIO_Pin_9 ;
-  GPIO_InitStructureUSART.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructureUSART.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructureUSART.GPIO_Speed = GPIO_Medium_Speed;
-  GPIO_InitStructureUSART.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_Init(GPIOA, &GPIO_InitStructureUSART);*/
-  
-  
-    
   USART_OneBitMethodCmd(USART1,ENABLE);
   USART_OverSampling8Cmd(USART1,ENABLE);
  
@@ -203,12 +188,7 @@ void InitUSART1(void){
   USART_InitStructureUSART.USART_StopBits = USART_StopBits_1;
   USART_InitStructureUSART.USART_WordLength = USART_WordLength_8b;
   USART_Init(USART1, &USART_InitStructureUSART);
-// 
-//  NVIC_SetPriority (USART1_IRQn, 10);
-//  NVIC_EnableIRQ (USART1_IRQn);
 
-    
-  //USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
   USART_Cmd(USART1, ENABLE);   
   USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
   USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
@@ -216,7 +196,7 @@ void InitUSART1(void){
   DMA_DeInit(DMA2_Stream7);
   DMA_InitStructure.DMA_Channel = DMA_Channel_4;
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);           //Адрес регистра данных USART:
-  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&uart1_tx_buf[0];             //адрес нулевого элемента массива:
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&reqBuffer[0][0];             //адрес нулевого элемента массива:
   DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;                       //Шлем в периферию, а не из нее:
   DMA_InitStructure.DMA_BufferSize = BUFFER1_SIZE;                                        //Размер буфера – 16 байт
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;              //В периферии не инкрементируем
@@ -231,27 +211,24 @@ void InitUSART1(void){
   DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
   DMA_Init(DMA2_Stream7, &DMA_InitStructure);
   
-  
   NVIC_SetPriority (DMA2_Stream7_IRQn, 0);
   NVIC_EnableIRQ(DMA2_Stream7_IRQn);
   DMA_ITConfig(DMA2_Stream7,DMA_IT_TC,ENABLE);
   
-  DMA_Cmd(DMA2_Stream7, ENABLE);
-  
-  
+  //DMA_Cmd(DMA2_Stream7, ENABLE);
+ 
   //RX DMA
-  
   DMA_DeInit(DMA2_Stream5);
   DMA_InitStructure.DMA_Channel = DMA_Channel_4;
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->DR);           //Адрес регистра данных USART:
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&uart1_rx_buf[0];           //адрес нулевого элемента массива:
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;                       //Шлем в периферию, а не из нее:
-  DMA_InitStructure.DMA_BufferSize = 73;                                       //Размер буфера – 16 байт
+  DMA_InitStructure.DMA_BufferSize = 100;                                       //Размер буфера – 16 байт
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;              //В периферии не инкрементируем
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;                       //в памяти – инкрементируем
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;       //Пересылаем данные байтами:
   DMA_InitStructure.DMA_MemoryDataSize = DMA_PeripheralDataSize_Byte;           //Пересылаем данные байтами:
-  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;                               //
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;                               //
   DMA_InitStructure.DMA_Priority = DMA_Priority_High;
   DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
   DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
@@ -263,32 +240,7 @@ void InitUSART1(void){
   NVIC_SetPriority (DMA2_Stream5_IRQn, 0);
   NVIC_EnableIRQ(DMA2_Stream5_IRQn);
   DMA_ITConfig(DMA2_Stream5,DMA_IT_TC,ENABLE);
-  
+  DMA_ClearFlag(DMA2_Stream5, DMA_IT_TCIF5);
   //DMA_Cmd(DMA2_Stream5, ENABLE);
-
-}
-
-void USART1_put_char(uint8_t c) {
-  while (tx_counter == BUFFER1_SIZE);                                            //если буфер переполнен, ждем
-  USART_ITConfig(USART1, USART_IT_TXE, DISABLE);                                 //запрещаем прерывание, чтобы оно не мешало менять переменную
-  
-  if (tx1_counter || (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET))     //если в буфере уже что-то есть или если в данный момент что-то уже передается
-  {
-    uart1_bufferTX[tx1_index++] = c;                                              //то кладем данные в отдельный буфер отправки 
-    if (tx1_index == BUFFER1_SIZE) tx1_index=0;                                    //идем по кругу
-    ++tx1_counter;                                                               //увеличиваем счетчик количества данных в буфере
-  }
-  else                                                                          //если UART свободен
-    USART_SendData(USART1, c);                                                  //передаем данные без прерывания
-  
-  USART_ITConfig(USART1, USART_IT_TXE, ENABLE);                                  //разрешаем прерывание
-}
-
-void USART1_put_string_2(unsigned char *string, uint32_t l) {
-  tx1_index=0;                                                                   //Передаём cначала
-  tx1_counter=l;//это ЭЛЬ! А не единица
-  while (l != 0){
-    USART1_put_char(*string++);
-    l--;
-  }
+  GPIO_SetBits(GPIOD,GPIO_Pin_3);                                               //На плате не подтянут
 }

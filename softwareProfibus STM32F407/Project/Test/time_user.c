@@ -7,9 +7,8 @@ volatile uint32_t TimingDelay_1mcs,TimingDelay_1ms;
 void timers_init(uint32_t period2)
 {
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-  RCC_ClocksTypeDef RCC_ClocksStatus;
-   TIM_DeInit(TIM3);
-   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);
+  TIM_DeInit(TIM3);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);
 //  /***********************************************************************
 //                                TIMER2              
 //  ***********************************************************************/
@@ -41,9 +40,9 @@ void timer5_init(void){
 
   TIM_InternalClockConfig(TIM5);
   
-  TIM_TimeBaseStructure.TIM_Prescaler = 8400-1;                                    //Смотреть осцилом
+  TIM_TimeBaseStructure.TIM_Prescaler = 8400-1;                                 //0.1 мс
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_Period = 10000-1;                                         //6Мгц
+  TIM_TimeBaseStructure.TIM_Period = 2500-1;                                    //4 раза в секунду
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM5,&TIM_TimeBaseStructure);

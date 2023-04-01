@@ -203,14 +203,15 @@ Unit_Diag_Bit(7)   = "DIAG_SIZE_ERROR"
 ;
 ;p.38
 ; <Module-Definition-List>
-Module = "LDM Registers Module" 0x40,0x15 
+Module = "ID Registers Module" 0x1F,0x25
 1
 EndModule
 ;
-Module = "ID Registers Module" 0x1F,0x25 
+Module = "ZASI Registers Module" 0x40, 0x11, 0x25
 2
 EndModule
 ;
-Module = "ZASI Registers Module" 0x1F,0x25 
+Module = "LDM Registers Module" 0x40,0x14
 3
 EndModule
+;

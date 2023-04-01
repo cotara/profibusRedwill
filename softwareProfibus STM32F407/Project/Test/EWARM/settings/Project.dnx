@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <settings>
     <StLinkDriver>
-        <stlinkserialNo>35341943</stlinkserialNo>
+        <stlinkserialNo>36301943</stlinkserialNo>
         <stlinkfoundProbes />
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>0</stlinkResetStrategy>
@@ -9,7 +9,7 @@
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </StLinkDriver>
     <DebugChecksum>
-        <Checksum>4151230076</Checksum>
+        <Checksum>4010888160</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -34,6 +34,8 @@
     </Disassembly>
     <watch_formats>
         <Fmt0>{W}1:crc	4	0</Fmt0>
+        <Fmt1>{W}42:inputSize	3	0</Fmt1>
+        <Fmt2>{W}42:outputSize	3	0</Fmt2>
     </watch_formats>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>

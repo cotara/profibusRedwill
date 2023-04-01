@@ -226,7 +226,6 @@
                     <name>CCDefines</name>
                     <state>STM32_E407</state>
                     <state>USE_STDPERIPH_DRIVER</state>
-                    <state>STM32F40XX</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>

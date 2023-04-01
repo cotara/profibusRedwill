@@ -61,7 +61,7 @@ uint8_t slave_addr;
 uint8_t master_addr;
 uint8_t group;
 uint8_t inputSize,outputSize;
-uint8_t data_out_register[INPUT_DATA_SIZE];
+uint8_t data_out_register[OUTPUT_DATA_SIZE];
 uint8_t data_in_register [INPUT_DATA_SIZE];
 uint32_t errorCount = 0;
 uint32_t tBit=1250;
@@ -88,10 +88,6 @@ extern uint8_t buadOK;
  */
 void init_Profibus (uint32_t baud)
 {
-
-    
-  uint8_t cnt;
-  
   profibus_status = PROFIBUS_WAIT_SYN;                                          // Инициализация переменных
   diagnose_status_1 = STATION_NOT_READY_;
   User_Para_size = 0;
@@ -473,7 +469,7 @@ void profibus_RX (void)
       else if (function_code == (REQUEST_ + FCV_ + SRD_HIGH) ||                 // Если Master отправляет выходные данные и запрашивает входные данные (Send and Request Data)
                function_code == (REQUEST_ + FCV_ + FCB_ + SRD_HIGH))
       {
-
+        //Раскладываем принятое и выплевываем то, что надо отправить
         for (cnt = 0; cnt < inputSize; cnt++)
           data_in_register[cnt] = uart_buffer[cnt + 7];
         for (cnt = 0; cnt < outputSize; cnt++)

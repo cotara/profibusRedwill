@@ -34,13 +34,12 @@ enum baudEnum{
 
 void USART2_put_string_2(unsigned char *string, uint32_t l);
 void USART2_put_string(unsigned char *string, uint32_t l);
-void USART1_put_string_2(unsigned char *string, uint32_t l);
-void USART1_put_char(uint8_t c);
 int InitUSART2();
 void EXTILine_Config(void);
 void DMA_RX_Reinit();
 void USART2_put_char(uint8_t c);
 void uart_process(uint8_t byte);
 void InitUSART1(void);
+void uart_error();
 
 #endif
