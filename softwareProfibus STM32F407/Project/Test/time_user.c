@@ -42,7 +42,7 @@ void timer5_init(void){
   
   TIM_TimeBaseStructure.TIM_Prescaler = 8400-1;                                 //0.1 мс
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_Period = 2500-1;                                    //4 раза в секунду
+  TIM_TimeBaseStructure.TIM_Period = 5000-1;                                    //4 раза в секунду
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM5,&TIM_TimeBaseStructure);

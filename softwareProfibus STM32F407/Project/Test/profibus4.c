@@ -90,10 +90,10 @@ void init_Profibus (uint32_t baud)
 {
   profibus_status = PROFIBUS_WAIT_SYN;                                          // Инициализация переменных
   diagnose_status_1 = STATION_NOT_READY_;
-  User_Para_size = 0;
+  User_Para_size = USER_PARA_SIZE;
   Vendor_Data_size = 0;
   group = 0;
-  
+  uint8_t cnt;
   switch(baud){
   case 0:
     tBit=DELAY_TBIT9_6;

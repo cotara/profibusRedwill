@@ -193,7 +193,7 @@
 #define OUTPUT_DATA_SIZE      128    // Anzahl Bytes die an Master gehen
 #define MODULE_CNT            8     // Anzahl der Module (Ein- Ausgangsmodule) bei modularer Station
 
-#define USER_PARA_SIZE        0     // Anzahl Bytes fuer Herstellerspezifische Parameterdaten
+#define USER_PARA_SIZE        5     // Anzahl Bytes fuer Herstellerspezifische Parameterdaten
 #define EXT_DIAG_DATA_SIZE    0     // Anzahl Bytes fuer erweiterte Diagnose
 #define VENDOR_DATA_SIZE      0     // Anzahl Herstellerspezifische Moduldaten
 ///////////////////////////////////////////////////////////////////////////////////////////////////

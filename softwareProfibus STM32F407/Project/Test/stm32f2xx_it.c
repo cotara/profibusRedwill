@@ -172,7 +172,7 @@ void DMA2_Stream5_IRQHandler(){
    else{                                                                        
      if(devModel == 1){                                                         //ИД
        if(iteratorModbus==1){                                                   //Обновляем выходные регистры, если это ответ на 3 функцию
-         memcpy(&deviceDataBuffer[1][0],&uart1_rx_buf[0],16);
+         memcpy(&deviceDataBuffer[1][0],&uart1_rx_buf[3],16);
          if (Module_cnt==1||Module_cnt==2)                                      //Заводской проект
            memcpy(&data_out_register[0],&deviceDataBuffer[1][0],16);            //Кладем данные девайса на первое место
          else if(Module_cnt>2)                                                  //Отладочный проект  (В TIA Portal вытащили больше 1 модулька)   
@@ -181,8 +181,8 @@ void DMA2_Stream5_IRQHandler(){
      }
      else if(devModel == 2){                                                    //ЗАСИ
        if(iteratorModbus==1){
-         memcpy(&deviceDataBuffer[2][0],&uart1_rx_buf[4],4);
-         memcpy(&deviceDataBuffer[2][4],&uart1_rx_buf[20],14);
+         memcpy(&deviceDataBuffer[2][0],&uart1_rx_buf[7],4);
+         memcpy(&deviceDataBuffer[2][4],&uart1_rx_buf[23],14);
          if (Module_cnt==1 || Module_cnt==2)                                    //Заводской проект
            memcpy(&data_out_register[0],&deviceDataBuffer[2][0],18);            //Кладем данные девайса на первое место
          if(Module_cnt>2)                                                       //Отладочный проект  (В TIA Portal вытащили больше 1 модулька)      
