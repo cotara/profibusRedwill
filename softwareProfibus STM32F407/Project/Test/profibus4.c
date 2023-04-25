@@ -65,7 +65,7 @@ uint8_t data_out_register[OUTPUT_DATA_SIZE];
 uint8_t data_in_register [INPUT_DATA_SIZE];
 uint32_t errorCount = 0;
 uint32_t tBit=1250;
-
+DeviceModel model=NULL_device;
 #if (USER_PARA_SIZE > 0)
 uint8_t User_Para[USER_PARA_SIZE];
 #endif

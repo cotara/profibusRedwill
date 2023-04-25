@@ -6,7 +6,7 @@ Model_Name          = "Device"
 Revision            = "V1.00"
 Ident_Number        = 0x8070
 Hardware_Release    = "V1.01"
-Software_Release    = "V1.11"
+Software_Release    = "V1.12"
 Bitmap_Device       = "Redwill"
 Bitmap_Diag          = "Redwill"
 
@@ -203,11 +203,11 @@ Unit_Diag_Bit(7)   = "DIAG_SIZE_ERROR"
 ;
 ;p.38
 ; <Module-Definition-List>
-Module = "ID Registers Module" 0x1F,0x25
+Module = "ID Registers Module" 0x1F,0x26
 1
 EndModule
 ;
-Module = "ZASI Registers Module" 0x40, 0x11, 0x25
+Module = "ZASI Registers Module" 0x40, 0x11, 0x26
 2
 EndModule
 ;
