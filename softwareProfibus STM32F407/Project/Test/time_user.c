@@ -10,7 +10,7 @@ void timers_init(uint32_t period2)
   TIM_DeInit(TIM3);
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);
 //  /***********************************************************************
-//                                TIMER2              
+//                                TIMER3              
 //  ***********************************************************************/
   TIM_InternalClockConfig(TIM3);
   //TIM_TimeBaseStructure.TIM_Prescaler = 168-1;                                    //Таймер настроен на 500 кГц
@@ -42,7 +42,7 @@ void timer5_init(void){
   
   TIM_TimeBaseStructure.TIM_Prescaler = 8400-1;                                 //0.1 мс
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_Period = 5000-1;                                    //4 раза в секунду
+  TIM_TimeBaseStructure.TIM_Period = 1000-1;                                    //4 раза в секунду
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM5,&TIM_TimeBaseStructure);
@@ -50,7 +50,7 @@ void timer5_init(void){
   TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
   TIM_ClearFlag(TIM5,TIM_IT_Update);
    
-  NVIC_SetPriority (TIM5_IRQn, 0);
+  NVIC_SetPriority (TIM5_IRQn, 10);
   NVIC_EnableIRQ (TIM5_IRQn);
   
   TIM_Cmd(TIM5,ENABLE);

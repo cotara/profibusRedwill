@@ -94,6 +94,8 @@ int InitUSART2(uint32_t baud) {
   USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
   USART_Cmd(USART2, ENABLE);    
   
+  GPIO_SetBits(GPIOD,GPIO_Pin_3);                                               //На плате не подтянут
+  
   return 0; 
    
 }
@@ -152,7 +154,7 @@ void uart_process(uint8_t byte){
 void uart_error(){
   spiSendByte(rx_index);
 }
-
+//modbus
 void InitUSART1(void){
   
   GPIO_InitTypeDef      GPIO_InitStructureUSART;
@@ -237,10 +239,10 @@ void InitUSART1(void){
   DMA_Init(DMA2_Stream5, &DMA_InitStructure);
   
   
-  NVIC_SetPriority (DMA2_Stream5_IRQn, 0);
+  NVIC_SetPriority (DMA2_Stream5_IRQn, 5);
   NVIC_EnableIRQ(DMA2_Stream5_IRQn);
   DMA_ITConfig(DMA2_Stream5,DMA_IT_TC,ENABLE);
   DMA_ClearFlag(DMA2_Stream5, DMA_IT_TCIF5);
   //DMA_Cmd(DMA2_Stream5, ENABLE);
-  GPIO_SetBits(GPIOD,GPIO_Pin_3);                                               //На плате не подтянут
+  
 }
