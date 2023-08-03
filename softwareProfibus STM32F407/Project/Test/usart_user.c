@@ -155,7 +155,7 @@ void uart_error(){
   spiSendByte(rx_index);
 }
 //modbus
-void InitUSART1(void){
+void  InitUSART1(void){
   
   GPIO_InitTypeDef      GPIO_InitStructureUSART;
   USART_InitTypeDef USART_InitStructureUSART; 
@@ -183,7 +183,7 @@ void InitUSART1(void){
   USART_OneBitMethodCmd(USART1,ENABLE);
   USART_OverSampling8Cmd(USART1,ENABLE);
  
-  USART_InitStructureUSART.USART_BaudRate = 9600;
+  USART_InitStructureUSART.USART_BaudRate = 115200;
   USART_InitStructureUSART.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructureUSART.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_InitStructureUSART.USART_Parity = USART_Parity_No;
