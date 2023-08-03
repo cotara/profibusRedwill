@@ -24,7 +24,7 @@
 //#define MASTER_ADD            2     // SPS Adresse
 #define SAP_OFFSET            128   // Service Access Point Adress Offset
 #define BROADCAST_ADD         127
-#define DEFAULT_ADD           3   // Auslieferungsadresse
+#define DEFAULT_ADD           26   // Auslieferungsadresse
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,6 +269,7 @@
 typedef enum {NULL_device = 0, ID_device = 1, ZASI_device = 2,LDM_device = 3} DeviceModel;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void init_Profibus (uint32_t baud);
+void profibusSetAddress(uint8_t add);
 void profibus_RX(void);
 void profibus_send_CMD (uint8_t  type, uint8_t  function_code,  uint8_t  sap_offset, uint8_t *pdu, uint8_t  length_pdu);
 void  profibus_TX (uint8_t *data, uint8_t  length);

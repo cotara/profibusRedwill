@@ -126,7 +126,7 @@ void TIM5_IRQHandler(void) {
     DMA_Cmd(DMA2_Stream5, DISABLE);                                             //Отрубаем прием и передачу на всякий
     DMA_Cmd(DMA2_Stream7, DISABLE);
     unsigned short CRC16 = 0;
-    if( model==NULL_device){                                                 //Если модель еще неизвестна, перед началом работы необходимо её выяснить
+    if( model==NULL_device){                                                    //Если модель еще неизвестна, перед началом работы необходимо её выяснить
       DMA2_Stream7->M0AR = (uint32_t)&reqBuffer[0][0];                          //Отправляем нулевой запрос на установление модели прибора
       byteWait=ansSize[0];  
       DMA2_Stream5->NDTR = ansSize[0];                                          //В ответ ждем 2 байта данных + 5 байт заголовка
@@ -183,7 +183,10 @@ void DMA2_Stream5_IRQHandler(){
      //Ответ на первый запрос модели       
      if(model==0){                                                                                                              
        model=uart1_rx_buf[3];                                                  //Записываем модель
+       profibusSetAddress(uart1_rx_buf[6]);
+       setModbusAddres(uart1_rx_buf[6]);
        if(model == 3) maxIterator =1;                                          //У ЛДМ только 3 функция, поэтому в круге запросов только 1 запрос
+       
      }
 
      //Ответ на запрос в круге запросов       

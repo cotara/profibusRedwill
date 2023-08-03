@@ -40,7 +40,7 @@ uint8_t buadOK=0;
 ///ИСХОДЯЩИЕ (3-я функция) 21 байт                                            //
 //      Стартовая позиция в массиве [36]                                      //
 //****************************************************************************//
-uint8_t reqBuffer[10][8] = {{0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00},              //Стартовый запрос
+uint8_t reqBuffer[10][8] = {{0xF9, 0x03, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00},              //Стартовый запрос
                             {0x00, 0x03, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00},               //ИД 3
                             {0x00, 0x06, 0x00, 0xf0, 0x00, 0x00, 0x00, 0x00},               //ИД 6(F0)
                             {0x00, 0x06, 0x00, 0xf1, 0x00, 0x00, 0x00, 0x00},               //ИД 6(F1)
@@ -49,7 +49,7 @@ uint8_t reqBuffer[10][8] = {{0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00},   
                             {0x00, 0x06, 0x00, 0x0A, 0x00, 0x00, 0x00, 0x00},               //ЗАСИ 6(A)
                             {0x00, 0x06, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00},               //ЗАСИ 6(10)
                             {0x00, 0x06, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x00},               //ЗАСИ 6(C)
-                            {0x00, 0x03, 0x00, 0x10, 0x00, 0x0E, 0x00, 0x00},               //LDM 3
+                            {0x01, 0x03, 0x00, 0x10, 0x00, 0x0E, 0x00, 0x00},               //LDM 3
 };
 
 uint8_t deviceDataBuffer[5][50] = {{0}};                                                //Буфер с данными от девайсов с запасом на 5 модульков
@@ -59,8 +59,8 @@ uint8_t deviceDataBuffer[5][50] = {{0}};                                        
 
 uint8_t uart1_rx_buf[100];                                                      //Буфер общения с мастер-контроллером
 uint16_t devModel=0;
-uint8_t ansSize[10]={2+5,16+5,8,8,8,34+5,8,8,8,28+5};
-
+uint8_t ansSize[10]={4+5,16+5,8,8,8,34+5,8,8,8,28+5};
+unsigned short CRC16 = 0;
 unsigned short crc16(unsigned char *data_p, unsigned short len)
 {
    unsigned short  crc = 0xFFFF;
@@ -73,13 +73,24 @@ unsigned short crc16(unsigned char *data_p, unsigned short len)
    }
    return(crc);
 }
+void setModbusAddres(uint8_t add){
+   for(int i=0;i<10;i++){
+     reqBuffer[i][0]=add;
+   }
+       //Расчёт CRC для всех запросов
+   for(int i=0;i<10;i++){
+        CRC16 = crc16(&reqBuffer[i][0],6);
+        reqBuffer[i][6] = CRC16&0xFF;  //CRC L
+        reqBuffer[i][7] = CRC16>>8;     //CRC H
+   }
+}
 /********************************************************
 * MAIN
 ********************************************************/
 void main(void) {
      
   
-    unsigned short CRC16 = 0;
+    
     
     RCC_ClocksTypeDef RCC_Clocks;
     RCC_GetClocksFreq(&RCC_Clocks);
@@ -92,7 +103,7 @@ void main(void) {
     InitUSART1();
     
     //Расчёт CRC для всех запросов
-    for(int i=0;i<13;i++){
+    for(int i=0;i<10;i++){
         CRC16 = crc16(&reqBuffer[i][0],6);
         reqBuffer[i][6] = CRC16&0xFF;  //CRC L
         reqBuffer[i][7] = CRC16>>8;     //CRC H

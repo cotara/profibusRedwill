@@ -27,6 +27,7 @@ typedef union{
 void Delay_100mcs(uint32_t nTime);
 void assert_failed(uint8_t* file, uint32_t line);
 unsigned short crc16(unsigned char *data_p, unsigned short len);
+void setModbusAddres(uint8_t add);
 void generateRandomBuffer();
 uint8_t bufferIsEmpy();
 void setBufferEmpty();
