@@ -100,7 +100,6 @@ void main(void) {
     
     
     LEDInit();
-    InitUSART1();
     
     //Расчёт CRC для всех запросов
     for(int i=0;i<10;i++){
@@ -108,8 +107,10 @@ void main(void) {
         reqBuffer[i][6] = CRC16&0xFF;  //CRC L
         reqBuffer[i][7] = CRC16>>8;     //CRC H
     }
-       
+    
+    
     timer5_init();
+    
     //Автоопределение скорости
     while(!buadOK){
       baudNum++;

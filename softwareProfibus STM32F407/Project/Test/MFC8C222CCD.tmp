@@ -20,13 +20,7 @@ static const uint32_t baudSpeed[8]={
   1500000,
   3000000
 };
-static const uint32_t baudModbusSpeed[5]={
-  9600,
-  19200,
-  38400,
-  76800,
-  115200
-};
+
 enum baudEnum{
   BAUD9_6=0,
   BAUD19_2=1,
