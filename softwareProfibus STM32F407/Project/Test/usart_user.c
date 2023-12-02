@@ -79,7 +79,7 @@ int InitUSART2(uint32_t baud) {
   
   /* Configure PD4 as rs485 tx select           */
   GPIO_InitTypeDef  GPIO_InitStructure;
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_7 | GPIO_Pin_4;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -118,6 +118,7 @@ void USART2_put_char(uint8_t c) {
 
 void USART2_put_string_2(unsigned char *string, uint32_t l) {
   TX485EN;
+  TX485RE;
   tx_index=0;                                                                   //Передаём cначала
   tx_counter=l;//это ЭЛЬ! А не единица
   while (l != 0){
@@ -128,6 +129,7 @@ void USART2_put_string_2(unsigned char *string, uint32_t l) {
 
 void USART2_put_string(unsigned char *string, uint32_t l){
   TX485EN;
+  TX485RE;
   memcpy(uart_bufferTX,string+1,l-1);
   tx_counter=l-1;
   USART_SendData(USART2, *string);

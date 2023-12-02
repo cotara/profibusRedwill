@@ -78,6 +78,7 @@ void USART2_IRQHandler(void) {
     if (USART_GetITStatus(USART2, USART_IT_TC) != RESET) {  
        USART_ClearITPendingBit(USART2, USART_IT_TC); 
        RX485EN;
+       RX485RE;
        USART_ITConfig(USART2, USART_IT_TC, DISABLE);
     }
 }

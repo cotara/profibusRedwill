@@ -8,7 +8,8 @@
 #define BUFFER1_SIZE 8
 #define TX485EN GPIO_SetBits(GPIOD, GPIO_Pin_7)    
 #define RX485EN GPIO_ResetBits(GPIOD, GPIO_Pin_7)   
-
+#define TX485RE //GPIO_SetBits(GPIOD, GPIO_Pin_4)    
+#define RX485RE //GPIO_ResetBits(GPIOD, GPIO_Pin_4) 
 
 static const uint32_t baudSpeed[8]={
   9600,
