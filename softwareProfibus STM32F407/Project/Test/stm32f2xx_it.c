@@ -165,7 +165,10 @@ void TIM5_IRQHandler(void) {
       DMA2_Stream5->NDTR = byteWait;                                            //Сколько байт ждать в ответ. В зависимости от типа запроса и модели девайса ждать будем определенное количество байт                        
     }
     
-    DMA_Cmd(DMA2_Stream7, ENABLE);                                              //Запуск отправки запроса                                    
+    DMA_Cmd(DMA2_Stream7, ENABLE);                                              //Запуск отправки запроса  
+    LED_Off(0);
+    LED_Off(1);
+    LED_Off(2);
     TIM_ClearFlag(TIM5, TIM_IT_Update); 
   }
 }
@@ -186,7 +189,7 @@ void DMA2_Stream5_IRQHandler(){
    unsigned short CRC16 = crc16(&uart1_rx_buf[0],byteWait-2);
    if((uart1_rx_buf[byteWait-2] == (CRC16&0xFF)) && (uart1_rx_buf[byteWait-1] == (CRC16>>8)))
    {    
-     
+     LED_On(0);
      //Ответ на первый запрос модели       
      if(model==0){                                                                                                              
        model=uart1_rx_buf[3];                                                  //Записываем модель

@@ -100,7 +100,7 @@ void main(void) {
     
     
     LEDInit();
-    
+
     //Расчёт CRC для всех запросов
     for(int i=0;i<10;i++){
         CRC16 = crc16(&reqBuffer[i][0],6);

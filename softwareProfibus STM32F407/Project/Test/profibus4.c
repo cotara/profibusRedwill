@@ -49,7 +49,7 @@ EXT_DIAG_) были переданы пустые диагностические
 */
 #include "profibus4.h"
 #include "spi_user.h"
-
+#include "LED_user.h"
 extern uint8_t uart_buffer[BUFFER_SIZE];
 extern uint16_t rx_index, tx_index,tx_counter;
 
@@ -175,7 +175,8 @@ void profibus_RX (void)
 
   process_data = 0;                                                             //Статус обработки пакета
   telegramm_type = uart_buffer[0];
-
+  
+  
   switch (telegramm_type)
   {
     case SD1:                                                                   // Телеграмма без данных, не более 6 байт
@@ -234,7 +235,8 @@ void profibus_RX (void)
   } 
 
   if (process_data == 1)                                                        // Продолджаем только если данные в порядке
-  {     
+  {
+    LED_On(1);
     master_addr = source_add;                                                   // Master Adress это адрес отправителя
     if ((destination_add & 0x80) && (source_add & 0x80))                        // Service Access Point (SAP) обнаружен?
     {
@@ -483,7 +485,7 @@ void profibus_RX (void)
         else
             profibus_send_CMD(SD2, DATA_LOW, 0, &uart_buffer[7], outputSize);            // Отправляем данные
           
-          
+        LED_On(2);  
 //        for (cnt = 0; cnt < INPUT_DATA_SIZE; cnt++)                             // Чтение данных от мастера
 //          data_in_register[cnt] = uart_buffer[cnt + 7];
 //               
