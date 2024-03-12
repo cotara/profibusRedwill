@@ -96,7 +96,7 @@ void main(void) {
     RCC_GetClocksFreq(&RCC_Clocks);
     SysTick_Config(SystemCoreClock/1000);
     
-    delay_1_ms(1000);
+    delay_1_ms(5000);
     
     
     LEDInit();

@@ -21,7 +21,7 @@ extern uint8_t data_in_register [INPUT_DATA_SIZE];                              
 extern DeviceModel model;
 //Мастер-контроллер
 uint32_t _cnt=0;
-uint8_t iteratorModbus=0;
+uint8_t iteratorModbus=1;
 uint8_t maxIterator=4;                                                          //Количество запросов в круге запросов (Зависит от устройства)
 extern uint16_t devModel;
 extern uint8_t reqBuffer[10][8];                                                //Буфер запросов к мастер-контроллеру
@@ -32,6 +32,8 @@ extern uint8_t deviceDataBuffer[5][50];                                         
 uint8_t byteWait=0, func = 0;
 uint8_t baudModbusOk=0;
 uint8_t baudModbusNum=-1;
+uint8_t modbus6_counter_old=0;
+
 void HardFault_Handler(void) {
     /* Go to infinite loop when Hard Fault exception occurs */
     while (1) {   }
@@ -139,11 +141,12 @@ void TIM5_IRQHandler(void) {
       DMA2_Stream5->NDTR = ansSize[0];                                          //В ответ ждем 2 байта данных + 5 байт заголовка
     }
     else{                                                                       //Если номер модели уже установлен, можно начинть обмен
-      iteratorModbus++;                                                         //Для каждой модели определен перечень и порядок запросов. ID: 3-6-6-6 ZASI: 3-6-6-6 LDM: 3
-      if(iteratorModbus>maxIterator) iteratorModbus=1;                          //Отправили все запросы - начинаем сначала
-      
+           
+      if(data_in_register[0]!=modbus6_counter_old)                           //Был инкрементирован счетчик,  значит команда на отправку 6-й функции
+        iteratorModbus=2;
+        
       if(iteratorModbus!=1){                                                    //Формируется запрос на 6-ю функцию
-        if(data_in_register[0]==1){                                             //Установлено ручное управление (С экрана)
+              
           if(Module_cnt>2){                                                      //Отладочный проект  (В TIA Portal вытащили больше 1 прибора)  
             reqBuffer[(model-1)*4+iteratorModbus][4] = data_in_register[(model-1)*7+(iteratorModbus-2)*2 + 1];            //Вставляем значение регистра по 6-й функции
             reqBuffer[(model-1)*4+iteratorModbus][5] = data_in_register[(model-1)*7+(iteratorModbus-2)*2 + 2];
@@ -156,13 +159,20 @@ void TIM5_IRQHandler(void) {
           CRC16 = crc16(&reqBuffer[(model-1)*4+iteratorModbus][0],6);        //Считаем CRC
           reqBuffer[(model-1)*4+iteratorModbus][6] = CRC16&0xFF;  //CRC L
           reqBuffer[(model-1)*4+iteratorModbus][7] = CRC16>>8;     //CRC H
-        }
-        else
-          iteratorModbus=1;                                                     //если ручное управление не включено, то закругляем круг запросов
+          
+                                                       
+                                   //Отправили все запросы - начинаем сначала
+          
+          modbus6_counter_old = data_in_register[0];
       }
+
+      
       DMA2_Stream7->M0AR = (uint32_t)&reqBuffer[(model-1)*4+iteratorModbus][0];//Ставим указатель на соответствующий запрос в массиве запросов.
       byteWait = ansSize[(model-1)*4+iteratorModbus];
       DMA2_Stream5->NDTR = byteWait;                                            //Сколько байт ждать в ответ. В зависимости от типа запроса и модели девайса ждать будем определенное количество байт                        
+      if(iteratorModbus!=1) iteratorModbus++;                                     //Для каждой модели определен перечень и порядок запросов. ID: 3-6-6-6 ZASI: 3-6-6-6 LDM: 3
+      if(iteratorModbus>maxIterator)
+            iteratorModbus=1; 
     }
     
     DMA_Cmd(DMA2_Stream7, ENABLE);                                              //Запуск отправки запроса  

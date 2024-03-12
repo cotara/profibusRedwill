@@ -2,7 +2,7 @@
 GSD_Revision        = 2
 ;PRODUCT SPECIFICATIONS ------------------------ 
 Vendor_Name         = "Redwill"
-Model_Name          = "LDM_Device" 
+Model_Name          = "ZASI_Device" 
 Revision            = "V1.00"
 Ident_Number        = 0x8070
 Hardware_Release    = "V1.01"
@@ -201,7 +201,7 @@ Unit_Diag_Bit(5)   = "RESERVED"
 Unit_Diag_Bit(6)   = "RESERVED"
 Unit_Diag_Bit(7)   = "DIAG_SIZE_ERROR"
 ;
-Module = "LDM Registers Module" 0x40,0x14
+Module = "ZASI Registers Module" 0x40, 0x11, 0x26
 1
 EndModule
 ;
