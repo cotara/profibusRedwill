@@ -142,7 +142,7 @@ void TIM5_IRQHandler(void) {
     }
     else{                                                                       //Если номер модели уже установлен, можно начинть обмен
            
-      if(data_in_register[0]!=modbus6_counter_old)                           //Был инкрементирован счетчик,  значит команда на отправку 6-й функции
+      if(data_in_register[0]!=modbus6_counter_old)                              //Был инкрементирован счетчик,  значит команда на отправку 6-й функции
         iteratorModbus=2;
         
       if(iteratorModbus!=1){                                                    //Формируется запрос на 6-ю функцию
