@@ -1,9 +1,0 @@
-[Diagnosis Setup05]
-Digital Contacts=0
-DA Digits=0 0 0 0 0 0 0 0        
-Con Value Digits=0 0 0        
-Con Devi Digits=0 0 0        
-Con Automatic=0 0 0        
-[Diagnosis Application]
-Trend Period=1000
-Statk Period=1000
