@@ -21,9 +21,6 @@ extern uint8_t data_in_register [INPUT_DATA_SIZE];                              
 extern DeviceModel model;
 //Мастер-контроллер
 uint32_t _cnt=0;
-uint8_t iteratorModbus=1;
-uint8_t maxIterator=4;                                                          //Количество запросов в круге запросов (Зависит от устройства)
-extern uint16_t devModel;
 extern uint8_t reqBuffer[10][8];                                                //Буфер запросов к мастер-контроллеру
 extern uint8_t ansSize[10];                                                     //Массив размеров ответов на запросы...(((
 extern uint8_t uart1_rx_buf[100];                                               //Буфер приемный от мастрер-контроллера
@@ -32,8 +29,10 @@ extern uint8_t deviceDataBuffer[5][50];                                         
 uint8_t byteWait=0, func = 0;
 uint8_t baudModbusOk=0;
 uint8_t baudModbusNum=-1;
-uint8_t modbus6_counter_old=0;
-
+uint8_t modbus6_status=0;                                                       //0 - можно отправлять, 1 - отправлено. Ждем нуля
+uint8_t counter6 = 0;                                                           //Номер регистра для отправки
+uint8_t reqIdx = 0; 
+uint8_t send6ToMasterStatusByte;                                                //Флаг того, что идет отправка 
 void HardFault_Handler(void) {
     /* Go to infinite loop when Hard Fault exception occurs */
     while (1) {   }
@@ -125,6 +124,10 @@ void TIM3_IRQHandler(void) {
 }
 
 //Периодический запрос 3 и 6 к мастер-контроллеру
+//В OUT регистрах профибаса 1-й байт - управляющий отправкой. В него надо записать адрес регистра для записи
+//Чтобы отправить следующий регистр надо записать следующий адрес.
+//Чтобы два раза записать один и тот же регистр, надо записать промежуточный нуль
+
 void TIM5_IRQHandler(void) {
   if (TIM_GetITStatus(TIM5, TIM_IT_Update) != RESET){
     DMA_Cmd(DMA2_Stream5, DISABLE);                                             //Отрубаем прием и передачу на всякий
@@ -136,45 +139,41 @@ void TIM5_IRQHandler(void) {
         if(baudModbusNum>4) baudModbusNum=0;
         InitUSART1(baudModbusNum);
       }
-      DMA2_Stream7->M0AR = (uint32_t)&reqBuffer[0][0];                          //Отправляем нулевой запрос на установление модели прибора
-      byteWait=ansSize[0];  
-      DMA2_Stream5->NDTR = ansSize[0];                                          //В ответ ждем 2 байта данных + 5 байт заголовка
+      reqIdx = 0;                                                                //Отправляем нулевой запрос на установление модели прибора.В ответ ждем 2 байта данных + 5 байт заголовка
     }
     else{                                                                       //Если номер модели уже установлен, можно начинть обмен
-           
-      if(data_in_register[0]!=modbus6_counter_old)                              //Был инкрементирован счетчик,  значит команда на отправку 6-й функции
-        iteratorModbus=2;                                                       //Отправятся все 6-е функции!!!
-        
-      if(iteratorModbus!=1){                                                    //Формируется запрос на 6-ю функцию
-              
-          if(Module_cnt>2){                                                      //Отладочный проект  (В TIA Portal вытащили больше 1 прибора)  
-            reqBuffer[(model-1)*4+iteratorModbus][4] = data_in_register[(model-1)*7+(iteratorModbus-2)*2 + 1];            //Вставляем значение регистра по 6-й функции
-            reqBuffer[(model-1)*4+iteratorModbus][5] = data_in_register[(model-1)*7+(iteratorModbus-2)*2 + 2];
-          }
-          else{                                                                 //Заводской проект
-            reqBuffer[(model-1)*4+iteratorModbus][4] = data_in_register[(iteratorModbus-2)*2+1];            //Вставляем значение регистра по 6-й функции
-            reqBuffer[(model-1)*4+iteratorModbus][5] = data_in_register[(iteratorModbus-2)*2 + 2];
-          }
-          
-          CRC16 = crc16(&reqBuffer[(model-1)*4+iteratorModbus][0],6);        //Считаем CRC
-          reqBuffer[(model-1)*4+iteratorModbus][6] = CRC16&0xFF;  //CRC L
-          reqBuffer[(model-1)*4+iteratorModbus][7] = CRC16>>8;     //CRC H
-          
-                                                       
-                                   //Отправили все запросы - начинаем сначала
-          
-          modbus6_counter_old = data_in_register[0];
-      }
-
       
-      DMA2_Stream7->M0AR = (uint32_t)&reqBuffer[(model-1)*4+iteratorModbus][0]; //Ставим указатель на соответствующий запрос в массиве запросов.
-      byteWait = ansSize[(model-1)*4+iteratorModbus];
-      DMA2_Stream5->NDTR = byteWait;                                            //Сколько байт ждать в ответ. В зависимости от типа запроса и модели девайса ждать будем определенное количество байт                        
-      if(iteratorModbus!=1) iteratorModbus++;                                     //Для каждой модели определен перечень и порядок запросов. ID: 3-6-6-6 ZASI: 3-6-6-6 LDM: 3
-      if(iteratorModbus>maxIterator)
-            iteratorModbus=1; 
+      if(data_in_register[0] == 0)      modbus6_status=0;                       //Обнуление командного статуса
+      
+      
+      if(data_in_register[0] != 0 && modbus6_status == 0){                      //Есть команда на отправку и можно отправлять
+        modbus6_status=1;                                                       //отправка совершена. Чтобы отправить следующий, ждем нуль в управляющем регистре
+        counter6 = 0;
+        for(reqIdx=4 * model - 2 ; reqIdx <= 4*model; reqIdx++ ){
+          counter6++;
+          if(data_in_register[0] == reqBuffer[reqIdx][3]){                      //Ищем, какую по счёту команду надо отправить
+              reqBuffer[reqIdx][4] = data_in_register[2 * counter6 -1];         //Вставляем значение регистра по 6-й функции
+              reqBuffer[reqIdx][5] = data_in_register[2 * counter6];
+
+              CRC16 = crc16(&reqBuffer[reqIdx][0],6);        //Считаем CRC
+              reqBuffer[reqIdx][6] = CRC16&0xFF;  //CRC L
+              reqBuffer[reqIdx][7] = CRC16>>8;     //CRC H
+                      
+              break;
+          }
+        }
+      }
+      else
+        reqIdx = 4*model - 3;                                                   //Нет команды на отправку, запрашиваем 3-ю функцию.
+      
+      
     }
     
+    DMA2_Stream7->M0AR = (uint32_t)&reqBuffer[reqIdx][0];                     //Ставим указатель на соответствующий запрос в массиве запросов.
+    byteWait = ansSize[reqIdx];
+    DMA2_Stream5->NDTR = byteWait;                                            //Сколько байт ждать в ответ. В зависимости от типа запроса и модели девайса ждать будем определенное количество байт                        
+
+      
     DMA_Cmd(DMA2_Stream7, ENABLE);                                              //Запуск отправки запроса  
     LED_Off(0);
     LED_Off(1);
@@ -205,7 +204,6 @@ void DMA2_Stream5_IRQHandler(){
        model=uart1_rx_buf[3];                                                  //Записываем модель
        profibusSetAddress(uart1_rx_buf[6]);
        setModbusAddres(uart1_rx_buf[6]);
-       if(model == 3) maxIterator =1;                                          //У ЛДМ только 3 функция, поэтому в круге запросов только 1 запрос
        baudModbusOk=1;
      }
 
@@ -214,32 +212,26 @@ void DMA2_Stream5_IRQHandler(){
        func = uart1_rx_buf[1];
        if(model == 1){                                                        //ИД
          if(func==3){                                                           //Обновляем выходные регистры, если это ответ на 3 функцию
-           memcpy(&deviceDataBuffer[1][0],&uart1_rx_buf[3],16);
-           if (Module_cnt==1 || Module_cnt==2)                                    //Заводской проект
-             memcpy(&data_out_register[0],&deviceDataBuffer[1][0],16);            //Кладем данные девайса на первое место
-           else if(Module_cnt>2)                                                  //Отладочный проект  (В TIA Portal вытащили больше 1 прибора)   
-             memcpy(&data_out_register[0],&deviceDataBuffer[1][0],16);            //Кладем данные девайса (ИД) на свое место в буфере профибаса
+           memcpy(&deviceDataBuffer[model][0],&uart1_rx_buf[3],16);
+           if (Module_cnt==1 || Module_cnt==2)                                  //Заводской проект
+             memcpy(&data_out_register[0],&deviceDataBuffer[model][0],16);            //Кладем данные девайса на первое место
          }
        }
        else if(model == 2){                                                    //ЗАСИ
          if(func==3){
-           memcpy(&deviceDataBuffer[2][0],&uart1_rx_buf[7],8);
-           memcpy(&deviceDataBuffer[2][8],&uart1_rx_buf[23],14);
+           memcpy(&deviceDataBuffer[model][0],&uart1_rx_buf[7],4);
+           memcpy(&deviceDataBuffer[model][4],&uart1_rx_buf[23],14);
            if (Module_cnt==1 || Module_cnt==2)                                    //Заводской проект
-             memcpy(&data_out_register[0],&deviceDataBuffer[2][0],22);            //Кладем данные девайса на первое место
-           if(Module_cnt>2)                                                       //Отладочный проект  (В TIA Portal вытащили больше 1 модулька)      
-             memcpy(&data_out_register[16],&deviceDataBuffer[2][0],22);           //Кладем данные девайса (ЗАСИ) на свое место в буфере профибаса
+             memcpy(&data_out_register[0],&deviceDataBuffer[model][0],18);            //Кладем данные девайса на первое место
          }
        }
        else if(model == 3){                                                    //LDM
          if(func==3){
-           memcpy(&deviceDataBuffer[3][0],&uart1_rx_buf[3],12);
-           memcpy(&deviceDataBuffer[3][12],&uart1_rx_buf[19],8);
-           memcpy(&deviceDataBuffer[3][20],&uart1_rx_buf[30],1);
+           memcpy(&deviceDataBuffer[model][0],&uart1_rx_buf[3],12);
+           memcpy(&deviceDataBuffer[model][12],&uart1_rx_buf[19],8);
+           memcpy(&deviceDataBuffer[model][20],&uart1_rx_buf[30],1);
            if (Module_cnt==1 || Module_cnt==2)                                      //Заводской проект
-             memcpy(&data_out_register[0],&deviceDataBuffer[3][0],21);              //Кладем данные девайса на первое место       
-           else if (Module_cnt>2)                                                   //Отладочный проект (В TIA Portal вытащили больше 1 модулька)       
-             memcpy(&data_out_register[34],&deviceDataBuffer[3][0],21);             //Кладем данные девайса (ЛДМ) на свое место в буфере профибаса
+             memcpy(&data_out_register[0],&deviceDataBuffer[model][0],21);              //Кладем данные девайса на первое место          
          }
        }    
      }

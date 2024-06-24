@@ -201,7 +201,7 @@ Unit_Diag_Bit(5)   = "RESERVED"
 Unit_Diag_Bit(6)   = "RESERVED"
 Unit_Diag_Bit(7)   = "DIAG_SIZE_ERROR"
 ;
-Module = "ZASI Registers Module" 0x40,0x15,0x26
+Module = "ZASI Registers Module" 0x40,0x11,0x26
 1
 EndModule
 ;

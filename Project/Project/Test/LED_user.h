@@ -1,6 +1,5 @@
 #include "stm32f4xx_gpio.h"
 
-#define TOSENDSIZE 10000
 
 void LEDInit(void);
 void LED_On(uint8_t diod_silk);

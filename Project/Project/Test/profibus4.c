@@ -81,6 +81,7 @@ uint8_t User_Para_size;
 uint8_t Module_cnt;
 uint8_t Module_Data_size[MODULE_CNT][2];                                        // [][0] = количество входов, [][1] = количество выходов
 uint8_t Vendor_Data_size;                                                       // Количество прочитанных байтов производителя
+extern uint8_t send6ToMasterStatusByte;
 extern uint8_t buadOK;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /*!
@@ -477,6 +478,7 @@ void profibus_RX (void)
         //Раскладываем принятое и выплевываем то, что надо отправить
         for (cnt = 0; cnt < inputSize; cnt++)
           data_in_register[cnt] = uart_buffer[cnt + 7];
+        
         for (cnt = 0; cnt < outputSize; cnt++)
           uart_buffer[cnt + 7] = data_out_register[cnt];
         
