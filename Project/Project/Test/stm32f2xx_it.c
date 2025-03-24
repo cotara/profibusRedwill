@@ -201,7 +201,7 @@ void DMA2_Stream5_IRQHandler(){
      LED_On(0);
      //Ответ на первый запрос модели       
      if(model==0){                                                                                                              
-       model=uart1_rx_buf[3];                                                  //Записываем модель
+       model=uart1_rx_buf[3] & 0x0f;                                                  //Записываем модель
        profibusSetAddress(uart1_rx_buf[6]);
        setModbusAddres(uart1_rx_buf[6]);
        baudModbusOk=1;

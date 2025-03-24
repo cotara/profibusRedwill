@@ -215,7 +215,7 @@ void  InitUSART1(uint8_t baud){
   DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
   DMA_Init(DMA2_Stream7, &DMA_InitStructure);
   
-  NVIC_SetPriority (DMA2_Stream7_IRQn, 0);
+  NVIC_SetPriority (DMA2_Stream7_IRQn, 5);
   NVIC_EnableIRQ(DMA2_Stream7_IRQn);
   DMA_ITConfig(DMA2_Stream7,DMA_IT_TC,ENABLE);
   
